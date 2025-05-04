@@ -5,13 +5,7 @@ except ImportError:
 import datetime as dt
 import calendar as cl
 from typing import Callable
-
-SCREEN_WIDTH = 375
-SCREEN_HEIGHT = 603
-CALENDER_WIDTH = SCREEN_WIDTH
-CALENDER_HEIGHT = SCREEN_HEIGHT * 3 / 5
-CALENDER_X = 0
-CALENDER_Y = 0
+from result import *
 
 
 class CalenderHeaderView(View):
@@ -46,7 +40,8 @@ class CalenderContentView(View):
         on_date_selected: Callable = None,
     ):
         super().__init__()
-        self.frame = (0, parrent_height / 6, parent_width, parrent_height * 5 / 6)
+        self.frame = (0, parrent_height / 6, parent_width,
+                      parrent_height * 5 / 6)
         self.background_color = "pink"
         self.year, self.month = year, month
         self.create_dates_btns(year, month)
@@ -55,10 +50,10 @@ class CalenderContentView(View):
         self.on_date_selected = on_date_selected
 
     def create_dates_btns(self, year, month):
-        day, days = cl.monthrange(year, month)  # day: 本月第一天是星期幾（0=Mon）
+        day, days = cl.monthrange(year, month)
 
-        # 轉換成以「日」開頭（對應你標題的 '日 一 二 三...'）
-        resorted_day_index = [6, 0, 1, 2, 3, 4, 5]  # 原始 weekday 改成你要的順序
+        
+        resorted_day_index = [6, 0, 1, 2, 3, 4, 5]  
         started_place_index = resorted_day_index.index(day)
         btn_title = 1
 
@@ -82,10 +77,10 @@ class CalenderContentView(View):
 
                 btn = Button(title=str(btn_title))
                 btn.frame = (
-                    self.width / 7 * col + 2,
-                    self.height / 6 * row + 2,
-                    self.width / 7 - 4,
-                    self.height / 6 - 4,
+                    self.width / 7 * col + 3,
+                    self.height / 6 * row + 3,
+                    self.width / 7 - 6,
+                    self.height / 6 - 6,
                 )
                 btn.action = self.btn_clicked
 
@@ -100,44 +95,83 @@ class CalenderContentView(View):
         self.previous_selected_btn = sender
         self.selected_btn = sender
         if self.on_date_selected:
-            self.on_date_selected(self.month, sender.title)
+            self.on_date_selected(self.month, int(sender.title))
 
 
 class CalenderView(View):
 
-    def __init__(self, x=0, y=0, on_handle_date: Callable = None):
+    def __init__(self, x=0, y=0,year=None,month=None, on_handle_date: Callable = None):
         super().__init__()
         self.frame = (x, y, CALENDER_WIDTH, CALENDER_HEIGHT)
         self.background_color = "blue"
         self.add_subview(CalenderHeaderView(self.width, self.height))
         self.add_subview(
-            CalenderContentView(
-                self.width, self.height, on_date_selected=self.date_selected
-            )
-        )
+            CalenderContentView(self.width,
+                                self.height,
+                                on_date_selected=self.date_selected))
         self.on_handle_date = on_handle_date
 
     def date_selected(self, month, date):
         if self.on_handle_date:
-            self.on_handle_date(month, date)
-            print("CalenderView got it")
+            result = self.on_handle_date(month, date)
+            if result.is_ok():
+                print("Succesed", result.value)
+            else:
+                print("Failed", result.error)
+
+class SelectMonthView(View):
+    def __init__(self,parent:View,x=0,y=0,):
+        self.background_color='#80ae8d'
+        self.frame=(x,y,parent.width,parent.height*1/4)
+
+class InterfaceView(View):
+    def __init__(self,x=0,y=0):
+        super().__init__()
+        self.background_color='#916aae'
+        self.frame=(x,y,INTERFACE_WIDTH,INTERFACE_HEIGHT)
+        self.add_subview(SelectMonthView(parent=self))
 
 
 class EntryView(View):
 
     def __init__(self):
         super().__init__()
-        self.name = "test2"
+        self.name = f'{dt.datetime.now().month}月'
         self.background_color = "white"
         self.add_subview(
-            CalenderView(x=CALENDER_X, y=CALENDER_Y, on_handle_date=self.handle_date)
-        )
+            CalenderView(x=CALENDER_X,
+                         y=CALENDER_Y,
+                         on_handle_date=self.handle_date))
+        self.add_subview(InterfaceView(x=INTERFACE_X,y=INTERFACE_Y))
         self.handled_date = None
 
-    def handle_date(self, month, date):
-        self.handled_date = (month, date)
-        print(f"Entry Got it, they are {month} {date}")
+    def handle_date(self, month, date) -> Result[tuple[int, int], str]:
+        try:
+            self.handled_date = (month, int(date))
+            return Ok((month, int(date)))
+        except Exception as e:
+            return Err(str(e))
 
 
-start = EntryView()
-start.present("fullscreen")
+class Program:
+
+    @staticmethod
+    def main():
+        start = EntryView()
+
+        start.present("fullscreen")
+
+
+if __name__ == "__main__":
+    SCREEN_WIDTH = 375
+    SCREEN_HEIGHT = 603
+    CALENDER_WIDTH = SCREEN_WIDTH
+    CALENDER_HEIGHT = SCREEN_HEIGHT * 4 / 7
+    CALENDER_X = 0
+    CALENDER_Y = 0
+    INTERFACE_WIDTH = SCREEN_WIDTH
+    INTERFACE_HEIGHT=SCREEN_HEIGHT * 3/7
+    INTERFACE_X=0
+    INTERFACE_Y= CALENDER_HEIGHT
+    Program.main()
+
