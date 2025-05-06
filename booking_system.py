@@ -9,7 +9,6 @@ from result import *
 
 
 class CalenderHeaderView(View):
-
     def __init__(self, parent_width, parrent_height):
         super().__init__()
         self.frame = (0, 0, parent_width, parrent_height / 6)
@@ -113,11 +112,11 @@ class CalenderView(View):
 
     def date_selected(self, month, date):
         if self.on_handle_date:
-            result = self.on_handle_date(month, date)
-            if result.is_ok():
-                print("Succesed", result.value)
+            Result = self.on_handle_date(month, date)
+            if Result.is_ok():
+                print("Succesed", Result.value)
             else:
-                print("Failed", result.error)
+                print("Failed", Result.error)
 
 class SelectMonthView(View):
     def __init__(self,parent:View,x=0,y=0,):

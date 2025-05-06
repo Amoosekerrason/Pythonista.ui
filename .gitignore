@@ -2,3 +2,4 @@ fetch_from_cloud_drive.py
 sync_to_cloud_drive.py
 
 ui_stub.pyi
+.vscode/settings.json
