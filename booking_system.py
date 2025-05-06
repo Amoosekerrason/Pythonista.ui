@@ -9,10 +9,10 @@ from result import *
 from abstract_class import *
 
 
-class CalenderHeaderContentView(ContentView):
+class CalendarHeaderContentView(ContentView):
 
-    def __init__(self, parent_width, parrent_height):
-        self.frame = (0, 0, parent_width, parrent_height / 6)
+    def __init__(self, parent_width, parent_height):
+        self.frame = (0, 0, parent_width, parent_height / 6)
         self.background_color = "yellow"
         self.show_content()
 
@@ -29,7 +29,7 @@ class CalenderHeaderContentView(ContentView):
             self.add_subview(label)
 
 
-class CalenderContentView(ContentView):
+class CalendarContentView(ContentView):
 
     def __init__(
         self,
@@ -38,7 +38,7 @@ class CalenderContentView(ContentView):
         year=None,
         month=None,
         day=None,
-        on_date_selected: Callable = None,
+        on_handle_date: Callable = None,
     ):
 
         self.frame = (0, parrent_height / 6, parent_width,
@@ -48,7 +48,7 @@ class CalenderContentView(ContentView):
         self.show_content()
         self.previous_selected_btn = None
         self.selected_btn = None
-        self.on_date_selected = on_date_selected
+        self.on_handle_date = on_handle_date
 
     def show_content(self):
         day, days = cl.monthrange(self.year, self.month)
@@ -94,8 +94,10 @@ class CalenderContentView(ContentView):
         sender.background_color = "#9bf1ff"
         self.previous_selected_btn = sender
         self.selected_btn = sender
-        if self.on_date_selected:
-            self.on_date_selected(self.month, int(sender.title))
+        if self.on_handle_date:
+            res = self.on_handle_date(self.month, int(sender.title))
+            if res.is_ok():
+                print("Succes select date", res.val)
 
 
 class TopSectionView(SectionView):
@@ -161,8 +163,8 @@ class MainSectionView(SectionView):
 
     def handle_date(self, month, date) -> Result[tuple[int, int], str]:
         try:
-            self.handled_date = (month, int(date))
-            return Ok((month, int(date)))
+            self.handled_date = (month, date)
+            return Ok(self.handled_date)
         except Exception as e:
             return Err(str(e))
 
@@ -172,7 +174,7 @@ class Program:
     def entry_screen(self, main_section: SectionView, year=None, month=None, day=None):
         top_section = TopSectionView(
             x=TOP_SECTION_X, y=TOP_SECTION_Y, on_handle_date=main_section.handle_date)
-        top_content = self.show_calender(top_section, year, month, day)
+        top_content = self.show_Calendar(top_section, year, month, day)
 
         below_section = BelowSectionView(x=BELOW_SECTION_X, y=BELOW_SECTION_Y)
         below_content = self.show_interface(below_section)
@@ -180,17 +182,17 @@ class Program:
         main_section.set_top_section(top_content)
         main_section.set_below_section(below_content)
 
-    def show_calender(self, top_section: SectionView, year, month,
+    def show_Calendar(self, top_section: SectionView, year, month,
                       day) -> SectionView:
 
-        header_view = CalenderHeaderContentView(top_section.width,
+        header_view = CalendarHeaderContentView(top_section.width,
                                                 top_section.height)
-        body_view = CalenderContentView(top_section.width,
+        body_view = CalendarContentView(top_section.width,
                                         top_section.height,
                                         year=year,
                                         month=month,
                                         day=day,
-                                        on_date_selected=top_section.date_selected)
+                                        on_handle_date=top_section.date_selected)
 
         top_section.header_content = header_view
         top_section.body_content = body_view
@@ -216,6 +218,7 @@ class Program:
         program.entry_screen(main_section, dt.datetime.now(
         ).year, dt.datetime.now().month, dt.datetime.now().day)
         program.present(main_section)
+        print(main_section.handled_date)
 
 
 if __name__ == "__main__":
