@@ -169,11 +169,10 @@ class MainSectionView(SectionView):
 
 class Program:
 
-    def entry_screen(self, main_section: SectionView):
+    def entry_screen(self, main_section: SectionView, year=None, month=None, day=None):
         top_section = TopSectionView(
             x=TOP_SECTION_X, y=TOP_SECTION_Y, on_handle_date=main_section.handle_date)
-        top_content = self.show_calender(top_section, dt.datetime.now(
-        ).year, dt.datetime.now().month, dt.datetime.now().day)
+        top_content = self.show_calender(top_section, year, month, day)
 
         below_section = BelowSectionView(x=BELOW_SECTION_X, y=BELOW_SECTION_Y)
         below_content = self.show_interface(below_section)
@@ -214,7 +213,8 @@ class Program:
     def main():
         program = Program()
         main_section = MainSectionView()
-        program.entry_screen(main_section)
+        program.entry_screen(main_section, dt.datetime.now(
+        ).year, dt.datetime.now().month, dt.datetime.now().day)
         program.present(main_section)
 
 
