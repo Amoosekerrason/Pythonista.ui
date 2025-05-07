@@ -4,19 +4,21 @@ except ImportError:
     from ui_stub import *  # type: ignore
 import datetime as dt
 import calendar as cl
-from typing import Callable
 from result import *
 from abstract_class import *
 
 
 class CalendarHeaderContentView(ContentView):
 
-    def __init__(self, parent_width, parent_height):
-        self.frame = (0, 0, parent_width, parent_height / 6)
+    def __init__(self, parent_section: SectionView = None, x=0, y=0):
+        self.parent_section = parent_section
+        self.x, self.y = x, y
         self.background_color = "yellow"
         self.show_content()
 
     def show_content(self):
+        self.frame = (self.x, self.y, self.parent_section.width,
+                      self.parent_section.height / 6)
         days = "日 一 二 三 四 五 六".split()
         label_width = self.width / 7
         label_height = self.height
@@ -33,24 +35,24 @@ class CalendarContentView(ContentView):
 
     def __init__(
         self,
-        parent_width,
-        parrent_height,
+        parent_section: SectionView = None,
+        x=0,
+        y=0,
         year=None,
         month=None,
         day=None,
-        on_handle_date: Callable = None,
     ):
-
-        self.frame = (0, parrent_height / 6, parent_width,
-                      parrent_height * 5 / 6)
+        self.parent_section = parent_section
         self.background_color = "pink"
+        self.x, self.y = x, y
         self.year, self.month, self.day = year, month, day
         self.show_content()
         self.previous_selected_btn = None
-        self.selected_btn = None
-        self.on_handle_date = on_handle_date
 
     def show_content(self):
+        self.frame = (self.x, self.parent_section.height / 6,
+                      self.parent_section.width,
+                      self.parent_section.height * 5 / 6)
         day, days = cl.monthrange(self.year, self.month)
 
         resorted_day_index = [6, 0, 1, 2, 3, 4, 5]
@@ -88,111 +90,226 @@ class CalendarContentView(ContentView):
                 btn_title += 1
 
     def btn_clicked(self, sender):
+        sender.background_color = "#9bf1ff"
         if self.previous_selected_btn:
             self.previous_selected_btn.background_color = None
 
-        sender.background_color = "#9bf1ff"
         self.previous_selected_btn = sender
         self.selected_btn = sender
-        if self.on_handle_date:
-            res = self.on_handle_date(self.month, int(sender.title))
-            if res.is_ok():
-                print("Succes select date", res.val)
+        if self.parent_section:
+            self.parent_section.handle_date(
+                self.year, self.month, int(sender.title))
 
 
 class TopSectionView(SectionView):
 
-    def __init__(self,
-                 x=0,
-                 y=0,
-                 year=None,
-                 month=None,
-                 header_content: ContentView = None,
-                 body_content: ContentView = None,
-                 on_handle_date: Callable = None):
-        self.frame = (x, y, TOP_SECTION_WIDTH, TOP_SECTION_HEIGHT)
+    def __init__(
+        self,
+        parent_section: SectionView = None,
+        x=0,
+        y=0,
+        year=None,
+        month=None,
+        header_content: ContentView = None,
+        body_content: ContentView = None,
+    ):
+        self.x, self.y = x, y
+        self.parent_section = parent_section
         self.background_color = "blue"
         self.header_content = header_content
         self.body_content = body_content
-        self.on_handle_date = on_handle_date
+        self.set_content()
 
-    def date_selected(self, month, date):
-        if self.on_handle_date:
-            res = self.on_handle_date(month, date)
+    def set_content(self):
+        self.frame = (self.x, self.y, TOP_SECTION_WIDTH, TOP_SECTION_HEIGHT)
+        if self.header_content:
+            self.add_subview(self.header_content)
+        if self.body_content:
+            self.add_subview(self.body_content)
+
+    def handle_date(self, year, month, date):
+        if self.parent_section:
+            res = self.parent_section.handle_date(year, month, date)
             if res.is_ok():
                 print("Succesed", res.val)
             else:
                 print("Failed", res.err)
 
 
+class SelectMonthContentView(ContentView):
+
+    def __init__(
+        self,
+        parent_section: SectionView = None,
+        x=0,
+        y=0,
+    ):
+        self.x, self.y = x, y
+        self.parent_section = parent_section
+        self.show_content()
+
+    def show_content(self):
+        if self.parent_section:
+            self.frame = (self.x, self.y, self.parent_section.width,
+                          self.parent_section.height)
+            last_btn, next_btn = Button(), Button()
+
+            last_btn.frame = (self.x, self.parent_section.height * (1 / 4),
+                              self.parent_section.width * 2 / 7,
+                              self.parent_section.height / 2)
+            next_btn.frame = (self.parent_section.width * 5 / 7,
+                              self.parent_section.height * (1 / 4),
+                              self.parent_section.width * 2 / 7,
+                              self.parent_section.height / 2)
+            last_btn.title = '上月'
+            last_btn.action = self.last_on_click
+            next_btn.title = '下月'
+            next_btn.action = self.next_on_click
+            btns = [last_btn, next_btn]
+            for btn in btns:
+                btn.border_width = 1
+                btn.background_color = '#ff9064'
+                self.add_subview(btn)
+
+    def last_on_click(self, sender):
+        if self.parent_section:
+            self.parent_section.month -= 1
+            if self.parent_section.month == 0:
+                self.parent_section.month = 12
+                self.parent_section.year -= 1
+            self.parent_section.change_month(self.parent_section.year,
+                                             self.parent_section.month,
+                                             self.parent_section.day)
+
+    def next_on_click(self, sender):
+        if self.parent_section:
+            self.parent_section.month += 1
+            if self.parent_section.month == 13:
+                self.parent_section.month = 1
+                self.parent_section.year += 1
+            self.parent_section.change_month(self.parent_section.year,
+                                             self.parent_section.month,
+                                             self.parent_section.day)
+
+
 class SelectMonthSectionView(SectionView):
 
     def __init__(
         self,
+        year,
+        month,
+        day,
         x=0,
         y=0,
+        btns: ContentView = None,
+        parent_section: SectionView = None,
     ):
-        self.background_color = '#80ae8d'
-        self.frame = (x, y, BELOW_SECTION_WIDTH, BELOW_SECTION_HEIGHT * 1 / 4)
+        self.background_color = 'gray'
+        self.x, self.y = x, y
+        self.year, self.month, self.day = year, month, day
+        self.parent_section = parent_section
+        self.btns = btns
+        self.set_content()
+
+    def set_content(self):
+        if self.parent_section:
+
+            self.frame = (self.x, self.y, self.parent_section.width,
+                          self.parent_section.height * 1 / 4)
+        if self.btns:
+            self.add_subview(self.btns)
+
+    def handle_date(self, year, month, day):
+        if self.parent_section:
+            self.parent_section.handle_date(year, month, day)
+    def change_month(self, year, month,
+                     date):
+        if self.parent_section:
+            self.parent_section.change_month(year, month, date)
 
 
 class BelowSectionView(SectionView):
 
-    def __init__(self, x=0, y=0):
+    def __init__(self, parent_section: SectionView = None, x=0, y=0):
         self.background_color = '#916aae'
-        self.frame = (x, y, BELOW_SECTION_WIDTH, BELOW_SECTION_HEIGHT)
+        self.x, self.y = x, y
+        self.parent_section = parent_section
         self.interface_section_list = []
+        self.set_content()
+
+    def set_content(self):
+        self.frame = (self.x, self.y, BELOW_SECTION_WIDTH,
+                      BELOW_SECTION_HEIGHT)
+        if self.interface_section_list:
+            for view in self.interface_section_list:
+                self.add_subview(view)
+
+    def handle_date(self, year, month, day):
+        if self.parent_section:
+            res = self.parent_section.handle_date(year, month, day)
+            if res.is_ok():
+                print("Success", res.val)
+            else:
+                print('Failed', res.err)
+    def change_month(self, year, month,
+                     date):
+        if self.parent_section:
+            self.parent_section.change_month(year, month, date)
 
 
 class MainSectionView(SectionView):
 
-    def __init__(self, top_section: SectionView = None, below_section: SectionView = None):
+    def __init__(self,
+                 program_node,
+                 top_section: SectionView = None,
+                 below_section: SectionView = None):
         self.name = f'{dt.datetime.now().month}月'
         self.background_color = "white"
+        self.root_node = program_node
         self.top_section = top_section
         self.below_section = below_section
         self.handled_date = None
 
-    def set_top_section(self, content=SectionView):
-        self.top_section = content
-        self.add_subview(self.top_section)
+    def set_content(self):
+        if self.top_section:
+            self.add_subview(self.top_section)
+        if self.below_section:
+            self.add_subview(self.below_section)
 
-    def set_below_section(self, content=SectionView):
-        self.below_section = content
-        self.add_subview(self.below_section)
-
-    def handle_date(self, month, date) -> Result[tuple[int, int], str]:
+    def handle_date(self, year, month,
+                    date) -> Result[tuple[int, int, int], str]:
         try:
-            self.handled_date = (month, date)
-            return Ok(self.handled_date)
+            self.handled_date = (year, month, date)
+            return Ok((year, month, int(date)))
+        except Exception as e:
+            return Err(str(e))
+    def change_month(self, year, month,
+                     date) -> Result[tuple[int, int, int], str]:
+        try:
+            self.name = f'{month}月'
+            self.remove_subview(self.top_section)
+            self.remove_subview(self.below_section)
+            self.root_node.entry_screen(self, year, month, date)
+            return Ok((year, month, int(date)))
         except Exception as e:
             return Err(str(e))
 
 
 class Program:
 
-    def entry_screen(self, main_section: SectionView, year=None, month=None, day=None):
-        top_section = TopSectionView(
-            x=TOP_SECTION_X, y=TOP_SECTION_Y, on_handle_date=main_section.handle_date)
-        top_content = self.show_Calendar(top_section, year, month, day)
+    def __init__(self):
+        self.calender_date = None
 
-        below_section = BelowSectionView(x=BELOW_SECTION_X, y=BELOW_SECTION_Y)
-        below_content = self.show_interface(below_section)
-
-        main_section.set_top_section(top_content)
-        main_section.set_below_section(below_content)
-
-    def show_Calendar(self, top_section: SectionView, year, month,
+    def show_calendar(self, top_section: SectionView, year, month,
                       day) -> SectionView:
 
-        header_view = CalendarHeaderContentView(top_section.width,
-                                                top_section.height)
-        body_view = CalendarContentView(top_section.width,
-                                        top_section.height,
-                                        year=year,
-                                        month=month,
-                                        day=day,
-                                        on_handle_date=top_section.date_selected)
+        header_view = CalendarHeaderContentView(parent_section=top_section)
+        body_view = CalendarContentView(
+            parent_section=top_section,
+            year=year,
+            month=month,
+            day=day,
+        )
 
         top_section.header_content = header_view
         top_section.body_content = body_view
@@ -200,13 +317,43 @@ class Program:
         top_section.add_subview(top_section.body_content)
         return top_section
 
-    def show_interface(self,
-                       below_section: SectionView) -> SectionView:
-        select_month_section = SelectMonthSectionView()
+    def show_interface(self, below_section: SectionView, year, month,
+                       day) -> SectionView:
+        select_month_section = SelectMonthSectionView(year,
+                                                      month,
+                                                      day,
+                                                      parent_section=below_section)
+        select_month_btns = SelectMonthContentView(
+            parent_section=select_month_section)
+        select_month_section.btns = select_month_btns
+        select_month_section.set_content()
         below_section.interface_section_list.append(select_month_section)
-        for view in below_section.interface_section_list:
-            below_section.add_subview(view)
+        below_section.set_content()
         return below_section
+
+    def entry_screen(self, main_section: SectionView, year, month, day):
+        top_section = TopSectionView(
+            parent_section=main_section,
+            x=TOP_SECTION_X,
+            y=TOP_SECTION_Y,
+        )
+        below_section = BelowSectionView(
+            parent_section=main_section,
+            x=BELOW_SECTION_X,
+            y=BELOW_SECTION_Y,
+        )
+
+        top_content = self.show_calendar(top_section, year, month, day)
+
+        below_content = self.show_interface(below_section, year, month, day)
+        main_section.top_section = top_content
+        main_section.below_section = below_content
+        main_section.set_content()
+
+    def remove_all_view(self, section: View):
+        for view in section.subviews:
+            self.remove_all_view(view)
+            section.remove_subview(view)
 
     def present(self, main_section: MainSectionView):
         main_section.present("fullscreen")
@@ -214,11 +361,12 @@ class Program:
     @staticmethod
     def main():
         program = Program()
-        main_section = MainSectionView()
-        program.entry_screen(main_section, dt.datetime.now(
-        ).year, dt.datetime.now().month, dt.datetime.now().day)
+        main_section = MainSectionView(program)
+        program.entry_screen(main_section,
+                             dt.datetime.now().year,
+                             dt.datetime.now().month,
+                             dt.datetime.now().day)
         program.present(main_section)
-        print(main_section.handled_date)
 
 
 if __name__ == "__main__":
