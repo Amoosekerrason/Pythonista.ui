@@ -3,8 +3,9 @@ from ui_stub import *  # type: ignore
 
 
 class ContentView(ABC, View):
-    def __init__(self):
+    def __init__(self, view_id: str):
         super().__init__()
+        self.view_id = view_id
 
     @abstractmethod
     def show_content(self):
@@ -12,8 +13,9 @@ class ContentView(ABC, View):
 
 
 class SectionView(ABC, View):
-    def __init__(self):
+    def __init__(self, view_id: str):
         super().__init__()
+        self.view_id = view_id
 
     @abstractmethod
     def set_content(self):

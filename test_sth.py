@@ -10,8 +10,9 @@ class Gender(enum.Enum):
 
 
 class ContentView(ABC):
-    def __init__(self,):
-        super().__init__()
+    def __init__(self, id: str):
+
+        self.id = id
 
     @abstractmethod
     def show_content(self,):
@@ -46,31 +47,19 @@ class AnotherContent(ContentView):
         print(f"I'm good at {self.intro}")
 
 
-class MainView():
+class MainView(ContentView):
     def __init__(self, content: ContentView):
         self.content = content
 
-    def show(self):
+    def show_content(self):
         self.content.show_content()
 
 
 class Program:
     @staticmethod
     def main():
-        while True:
-            MainView(OtherContent("John", 18, Gender.male.name)).show()
-            print("1. born time")
-            print("2. hobbit")
-            match input("display what: "):
-                case "1":
-                    MainView(SomeContent(1991, 10)).show()
-                    print()
-                case "2":
-                    MainView(AnotherContent("sleeping")).show()
-                    print()
-
-                case _:
-                    exit()
+        main = MainView(SomeContent(1991, 10))
+        
 
 
 if __name__ == "__main__":
