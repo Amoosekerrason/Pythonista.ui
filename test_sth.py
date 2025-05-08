@@ -10,8 +10,7 @@ class Gender(enum.Enum):
 
 
 class ContentView(ABC):
-    def __init__(self, id: str):
-
+    def __init__(self, id: str = "0"):
         self.id = id
 
     @abstractmethod
@@ -49,6 +48,7 @@ class AnotherContent(ContentView):
 
 class MainView(ContentView):
     def __init__(self, content: ContentView):
+        super().__init__()
         self.content = content
 
     def show_content(self):
@@ -59,7 +59,11 @@ class Program:
     @staticmethod
     def main():
         main = MainView(SomeContent(1991, 10))
-        
+        print(main.id)
+        main.id = "0-1"
+        print(main.id)
+        newMain = MainView(SomeContent(1991, 15), id="0-2")
+        print(newMain.id)
 
 
 if __name__ == "__main__":

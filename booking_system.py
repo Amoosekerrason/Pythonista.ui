@@ -35,14 +35,14 @@ class CalendarHeaderContentView(ContentView):
 class CalendarContentView(ContentView):
 
     def __init__(
-        self,
-        view_id,
-        parent_section: SectionView = None,
-        x=0,
-        y=0,
-        year=None,
-        month=None,
-        day=None,
+            self,
+            view_id,
+            parent_section: SectionView = None,
+            x=0,
+            y=0,
+            year=None,
+            month=None,
+            day=None,
     ):
         super().__init__(view_id)
         self.parent_section = parent_section
@@ -110,15 +110,15 @@ class CalendarContentView(ContentView):
 class TopSectionView(SectionView):
 
     def __init__(
-        self,
-        view_id,
-        parent_section: SectionView = None,
-        x=0,
-        y=0,
-        year=None,
-        month=None,
-        header_content: ContentView = None,
-        body_content: ContentView = None,
+            self,
+            view_id,
+            parent_section: SectionView = None,
+            x=0,
+            y=0,
+            year=None,
+            month=None,
+            header_content: ContentView = None,
+            body_content: ContentView = None,
     ):
         super().__init__(view_id)
         self.x, self.y = x, y
@@ -144,14 +144,32 @@ class TopSectionView(SectionView):
                 print("Failed", res.err)
 
 
+class CRUDContentView(ContentView):
+    def __init__(self, view_id, parent_section: SectionView = None, x=0, y=0):
+        super().__init__(view_id)
+        self.parent_section = parent_section
+
+    def show_content(self):
+        return super().show_content()
+
+
+class CRUDSectionView (SectionView):
+    def __init__(self, view_id, parent_section: SectionView = None, x=0, y=0):
+        super().__init__(view_id)
+        self.parent_section = parent_section
+
+    def set_content(self):
+        return super().set_content()
+
+
 class SelectMonthContentView(ContentView):
 
     def __init__(
-        self,
-        view_id,
-        parent_section: SectionView = None,
-        x=0,
-        y=0,
+            self,
+            view_id,
+            parent_section: SectionView = None,
+            x=0,
+            y=0,
     ):
         super().__init__(view_id)
         self.x, self.y = x, y
@@ -205,15 +223,15 @@ class SelectMonthContentView(ContentView):
 class SelectMonthSectionView(SectionView):
 
     def __init__(
-        self,
-        view_id,
-        year,
-        month,
-        day,
-        x=0,
-        y=0,
-        btns: ContentView = None,
-        parent_section: SectionView = None,
+            self,
+            view_id,
+            year,
+            month,
+            day,
+            x=0,
+            y=0,
+            btns: ContentView = None,
+            parent_section: SectionView = None,
     ):
         super().__init__(view_id)
         self.background_color = 'gray'
@@ -396,6 +414,10 @@ class Program:
                              dt.datetime.now().month,
                              dt.datetime.now().day)
         program.present(main_section)
+        with open('view_id.txt', 'w') as f:
+            for i in sorted(program.view_id_dict.keys(), key=lambda k: [int(x)for x in k.split('-')]):
+                view = program.view_id_dict[i]
+                f.write(f'{i}:{view.__class__.__name__}\n')
 
 
 if __name__ == "__main__":
