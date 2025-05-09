@@ -45,8 +45,9 @@ class CalendarContentView(ContentView):
         self.parent_section = parent_section
         self.background_color = "pink"
         self.year, self.month, self.day = year, month, day
-        self.show_content()
         self.previous_selected_btn = None
+        self.selected_btn = None
+        self.show_content()
 
     def show_content(self):
         if not self.parent_section:
@@ -88,16 +89,18 @@ class CalendarContentView(ContentView):
                     self.width / 7 - 6,
                     self.height / 6 - 6,
                 )
+                if int(btn.title) == self.day:
+                    btn.background_color = "#9bf1ff"
+                    self.previous_selected_btn = btn
+                    self.selected_btn = btn
                 btn.action = self.btn_clicked
-
                 self.add_subview(btn)
                 btn_title += 1
 
     def btn_clicked(self, sender):
-        sender.background_color = "#9bf1ff"
         if self.previous_selected_btn:
             self.previous_selected_btn.background_color = None
-
+        sender.background_color = "#9bf1ff"
         self.previous_selected_btn = sender
         self.selected_btn = sender
         if self.parent_section:
@@ -149,8 +152,10 @@ class CRUDContentView(ContentView):
         self.show_content()
 
     def show_content(self):
-        self.frame=(self.x,self.y,self.parent_section.width,self.parent_section.height)
-        
+        self.frame = (self.x, self.y, self.parent_section.width,
+                      self.parent_section.height)
+
+
 class CRUDSectionView(SectionView):
 
     def __init__(self, view_id, parent_section):
@@ -176,20 +181,28 @@ class SelectMonthContentView(ContentView):
         if self.parent_section:
             self.frame = (self.x, self.y, self.parent_section.width,
                           self.parent_section.height)
-            last_btn, next_btn = Button(), Button()
+            last_btn, middle_btn, next_btn = Button(), Button(), Button()
 
             last_btn.frame = (self.x, self.parent_section.height * (1 / 4),
                               self.parent_section.width * 2 / 7,
                               self.parent_section.height * 2 / 3)
+            middle_btn.frame = (self.parent_section.width * 2 / 7,
+                                self.parent_section.height * (1 / 4),
+                                self.parent_section.width * 3 / 7,
+                                self.parent_section.height * 2 / 3)
             next_btn.frame = (self.parent_section.width * 5 / 7,
                               self.parent_section.height * (1 / 4),
                               self.parent_section.width * 2 / 7,
                               self.parent_section.height * 2 / 3)
+
             last_btn.title = '上月'
             last_btn.action = self.last_on_click
+            middle_btn.title = f'{self.parent_section.year-1911}/{self.parent_section.month}/{self.parent_section.day}'
+            self.middle_btn = middle_btn
+            middle_btn.action = self.middle_on_click
             next_btn.title = '下月'
             next_btn.action = self.next_on_click
-            btns = [last_btn, next_btn]
+            btns = [last_btn, middle_btn, next_btn]
             for btn in btns:
                 btn.border_width = 1
                 btn.background_color = '#ff9064'
@@ -205,6 +218,9 @@ class SelectMonthContentView(ContentView):
                                              self.parent_section.month,
                                              self.parent_section.day)
 
+    def middle_on_click(self, sender):
+        pass
+
     def next_on_click(self, sender):
         if self.parent_section:
             self.parent_section.month += 1
@@ -214,6 +230,9 @@ class SelectMonthContentView(ContentView):
             self.parent_section.change_month(self.parent_section.year,
                                              self.parent_section.month,
                                              self.parent_section.day)
+
+    def handled_date(self, date: tuple[int, int, int]):
+        self.middle_btn.title = f'{date[0]-1911}/{date[1]}/{date[2]}'
 
 
 class SelectMonthSectionView(SectionView):
@@ -249,6 +268,9 @@ class SelectMonthSectionView(SectionView):
         if self.parent_section:
             self.parent_section.change_month(year, month, date)
 
+    def handled_date(self, date: tuple[int, int, int]):
+        self.btns.handled_date(date)
+
 
 class BelowSectionView(SectionView):
 
@@ -279,6 +301,11 @@ class BelowSectionView(SectionView):
         if self.parent_section:
             self.parent_section.change_month(year, month, date)
 
+    def handled_date(self, date: tuple[int, int, int]):
+        for view in self.interface_section_list:
+            if type(view) == SelectMonthSectionView:
+                view.handled_date(date)
+
 
 class MainSectionView(SectionView):
 
@@ -305,8 +332,10 @@ class MainSectionView(SectionView):
 
     def handle_date(self, year, month,
                     date) -> Result[tuple[int, int, int], str]:
+        handled_date = (year, month, date)
         try:
-            self.handled_date = (year, month, date)
+            self.handled_date = handled_date
+            self.below_section.handled_date(handled_date)
             return Ok((year, month, int(date)))
         except Exception as e:
             return Err(str(e))
