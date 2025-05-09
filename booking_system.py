@@ -146,11 +146,11 @@ class CRUDContentView(ContentView):
 
     def __init__(self, view_id, parent_section):
         super().__init__(view_id, parent_section)
+        self.show_content()
 
     def show_content(self):
-        return super().show_content()
-
-
+        self.frame=(self.x,self.y,self.parent_section.width,self.parent_section.height)
+        
 class CRUDSectionView(SectionView):
 
     def __init__(self, view_id, parent_section):
