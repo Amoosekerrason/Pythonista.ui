@@ -273,6 +273,7 @@ class SelectMonthSectionView(SectionView):
             self.parent_section.change_month(year, month, date)
 
     def handled_date(self, date: tuple[int, int, int]):
+        self.year,self.month,self.day=date[0],date[1],date[2]
         self.btns.handled_date(date)
 
 
