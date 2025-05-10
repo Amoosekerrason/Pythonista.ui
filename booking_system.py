@@ -217,6 +217,8 @@ class SelectMonthContentView(ContentView):
             self.parent_section.change_month(self.parent_section.year,
                                              self.parent_section.month,
                                              self.parent_section.day)
+            self.middle_btn.title = f'{self.parent_section.year-1911}/{self.parent_section.month}/{self.parent_section.day}'
+            
 
     def middle_on_click(self, sender):
         pass
@@ -230,6 +232,8 @@ class SelectMonthContentView(ContentView):
             self.parent_section.change_month(self.parent_section.year,
                                              self.parent_section.month,
                                              self.parent_section.day)
+            self.middle_btn.title = f'{self.parent_section.year-1911}/{self.parent_section.month}/{self.parent_section.day}'
+            
 
     def handled_date(self, date: tuple[int, int, int]):
         self.middle_btn.title = f'{date[0]-1911}/{date[1]}/{date[2]}'
