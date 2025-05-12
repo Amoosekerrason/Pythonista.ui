@@ -451,6 +451,8 @@ class Program:
 
         crud_section = CRUDSectionView("0-2-2", below_section)
         crud_content = CRUDContentView("0-2-2-1", crud_section)
+        self.view_id_dict[crud_section.view_id] = crud_section
+        self.view_id_dict[crud_content.view_id] = crud_content
         crud_section.content = crud_content
         crud_section.set_content()
         below_section.interface_section_list.append(select_month_section)
