@@ -154,16 +154,17 @@ class CRUDContentView(ContentView):
     def show_content(self):
         self.frame = (self.x, self.y, self.parent_section.width,
                       self.parent_section.height)
-        total_width=self.parent_width.width
-        total_height=self.parent_section.height
-        btn_margin=20
-        btn_width=(total_width-4*btn_margin)/2
-        btn_height=(total_height-4*btn_margin)/2
-        top_left_btn_x,top_left_btn_y=btn_margin,btn_margin
-        top_right_btn_x,top_right_btn_y=top_left_btn_x+btn_width+2*btn_margin,top_left_btn_y
-        below_left_btn_x,below_left_btn_y=top_left_btn_x,top_left_btn_y+btn_height+2*btn_margin
-        below_right_btn_x,below_right_btn_y=top_left_btn_x+btn_width+2*btn_margin,top_left_btn_y+btn_height+2*btn_margin
-        
+        total_width = self.parent_width.width
+        total_height = self.parent_section.height
+        btn_margin = 20
+        btn_width = (total_width-4*btn_margin)/2
+        btn_height = (total_height-4*btn_margin)/2
+        NW_btn_x, NW_btn_y = btn_margin, btn_margin
+        NE_btn_x, NE_btn_y = NW_btn_x+btn_width+2*btn_margin, NW_btn_y
+        SW_btn_x, SW_btn_y = NW_btn_x, NW_btn_y+btn_height+2*btn_margin
+        SE_btn_x, SE_btn_y = NW_btn_x+btn_width+2 * \
+            btn_margin, NW_btn_y+btn_height+2*btn_margin
+        NW_btn, NE_btn, SW_btn, SE_btn = Button(), Button(), Button(), Button()
 
 
 class CRUDSectionView(SectionView):
