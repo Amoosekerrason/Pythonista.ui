@@ -159,6 +159,10 @@ class CRUDContentView(ContentView):
         btn_margin=20
         btn_width=(total_width-4*btn_margin)/2
         btn_height=(total_height-4*btn_margin)/2
+        top_left_btn_x,top_left_btn_y=btn_margin,btn_margin
+        top_right_btn_x,top_right_btn_y=top_left_btn_x+btn_width+2*btn_margin,top_left_btn_y
+        below_left_btn_x,below_left_btn_y=top_left_btn_x,top_left_btn_y+btn_height+2*btn_margin
+        below_right_btn_x,below_right_btn_y=top_left_btn_x+btn_width+2*btn_margin,top_left_btn_y+btn_height+2*btn_margin
         
 
 
