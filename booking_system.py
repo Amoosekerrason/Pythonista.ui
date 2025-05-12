@@ -154,6 +154,12 @@ class CRUDContentView(ContentView):
     def show_content(self):
         self.frame = (self.x, self.y, self.parent_section.width,
                       self.parent_section.height)
+        total_width=self.parent_width.width
+        total_height=self.parent_section.height
+        btn_margin=20
+        btn_width=(total_width-4*btn_margin)/2
+        btn_height=(total_height-4*btn_margin)/2
+        
 
 
 class CRUDSectionView(SectionView):
