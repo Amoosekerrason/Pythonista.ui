@@ -194,8 +194,9 @@ class CRUDContentView(ContentView):
 
 class CRUDSectionView(SectionView):
 
-    def __init__(self, view_id, parent_section):
+    def __init__(self, view_id, parent_section, content: ContentView = None):
         super().__init__(view_id, parent_section)
+        self.content = content
         self.set_content()
 
     def set_content(self):
@@ -205,6 +206,8 @@ class CRUDSectionView(SectionView):
             self.parent_section.width,
             self.parent_section.height * 3 / 4,
         )
+        if self.content:
+            self.add_subview(self.content)
 
 
 class SelectMonthContentView(ContentView):
@@ -445,7 +448,13 @@ class Program:
         self.view_id_dict[select_month_btns.view_id] = select_month_btns
         select_month_section.btns = select_month_btns
         select_month_section.set_content()
+
+        crud_section = CRUDSectionView("0-2-2", below_section)
+        crud_content = CRUDContentView("0-2-2-1", crud_section)
+        crud_section.content = crud_content
+        crud_section.set_content()
         below_section.interface_section_list.append(select_month_section)
+        below_section.interface_section_list.append(crud_section)
         below_section.set_content()
         return below_section
 
