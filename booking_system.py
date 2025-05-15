@@ -233,11 +233,12 @@ class JumpToDateContentView(ContentView):
             self.parent_section.height,
         )
         datepicker = DatePicker()
+        datepicker.mode=DATE_PICKER_MODE_DATE
         datepicker.frame = (
-            self.x,
-            self.y,
-            self.parent_section.width / 2,
-            self.parent_section.height / 2,
+            self.parent_section.width / 4-50,
+            self.parent_section.height/4-10,
+            self.parent_section.width /2,
+            self.parent_section.height/2 ,
         )
         self.add_subview(datepicker)
 
