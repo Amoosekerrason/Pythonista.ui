@@ -113,7 +113,8 @@ class CalendarContentView(ContentView):
         self.previous_selected_btn = sender
         self.selected_btn = sender
         if self.parent_section:
-            self.parent_section.handle_date(self.year, self.month, int(sender.title))
+            self.parent_section.handle_date(
+                self.year, self.month, int(sender.title))
 
 
 class TopSectionView(SectionView):
@@ -232,13 +233,14 @@ class JumpToDateContentView(ContentView):
             self.parent_section.width,
             self.parent_section.height,
         )
+        self.background_color = "white"
         datepicker = DatePicker()
-        datepicker.mode=DATE_PICKER_MODE_DATE
+        datepicker.mode = DATE_PICKER_MODE_DATE
         datepicker.frame = (
             self.parent_section.width / 4-50,
             self.parent_section.height/4-10,
-            self.parent_section.width /2,
-            self.parent_section.height/2 ,
+            self.parent_section.width / 2,
+            self.parent_section.height/2,
         )
         self.add_subview(datepicker)
 
@@ -290,7 +292,8 @@ class SelectMonthContentView(ContentView):
             btn_y = (self.parent_section.height - btn_height) / 2
 
             last_btn.frame = (left_btn_x, btn_y, side_btn_width, btn_height)
-            middle_btn.frame = (middle_btn_x, btn_y, middle_btn_width, btn_height)
+            middle_btn.frame = (middle_btn_x, btn_y,
+                                middle_btn_width, btn_height)
             next_btn.frame = (right_btn_x, btn_y, side_btn_width, btn_height)
 
             last_btn.title = "上月"
@@ -491,11 +494,12 @@ class Program:
 
     def crud_to_date_picker(self):
         crud_section = self.view_id_dict["0-2-2"]
-        self.remove_all_view(crud_section)
+        # self.remove_all_view(crud_section)
         datepicker = JumpToDateContentView("0-2-2-2", crud_section)
         self.view_id_dict["0-2-2-2"] = datepicker
-        crud_section.content = datepicker
-        crud_section.set_content()
+        # crud_section.content = datepicker
+        # crud_section.set_content()
+        datepicker.present("sheet")
 
     def get_select_month_section(self, year, month, day, section: SectionView = None):
         select_month_section = SelectMonthSectionView(
@@ -505,7 +509,8 @@ class Program:
             month,
             day,
         )
-        select_month_btns = SelectMonthContentView("0-2-1-1", select_month_section)
+        select_month_btns = SelectMonthContentView(
+            "0-2-1-1", select_month_section)
         self.view_id_dict[select_month_section.view_id] = select_month_section
         self.view_id_dict[select_month_btns.view_id] = select_month_btns
         select_month_section.btns = select_month_btns
@@ -525,7 +530,8 @@ class Program:
         self, year, month, day, section: SectionView = None
     ) -> SectionView:
 
-        header_view = CalendarHeaderContentView("0-1-1", parent_section=section)
+        header_view = CalendarHeaderContentView(
+            "0-1-1", parent_section=section)
         body_view = CalendarContentView(
             "0-1-2", parent_section=section, year=year, month=month, day=day
         )
@@ -541,7 +547,8 @@ class Program:
     def show_interface(
         self, year, month, day, section: SectionView = None
     ) -> SectionView:
-        select_month_section = self.get_select_month_section(year, month, day, section)
+        select_month_section = self.get_select_month_section(
+            year, month, day, section)
 
         crud_section = self.get_crud_section(section)
         section.interface_section_list.append(select_month_section)
@@ -559,7 +566,8 @@ class Program:
         self.below_section.y = self.top_section.height
         self.view_id_dict[self.below_section.view_id] = self.below_section
         top_content = self.show_calendar(year, month, day, self.top_section)
-        below_content = self.show_interface(year, month, day, self.below_section)
+        below_content = self.show_interface(
+            year, month, day, self.below_section)
         main_section.top_section = top_content
         main_section.below_section = below_content
         main_section.set_content()
