@@ -223,6 +223,7 @@ class CRUDSectionView(SectionView):
 class JumpToDateContentView(ContentView):
     def __init__(self, view_id, parent_section, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
+        self.show_content()
 
     def show_content(self):
         self.frame = (
@@ -235,8 +236,8 @@ class JumpToDateContentView(ContentView):
         datepicker.frame = (
             self.x,
             self.y,
-            self.superview.width / 2,
-            self.superview.height / 2,
+            self.parent_section.width / 2,
+            self.parent_section.height / 2,
         )
         self.add_subview(datepicker)
 
@@ -489,6 +490,7 @@ class Program:
 
     def crud_to_date_picker(self):
         crud_section = self.view_id_dict["0-2-2"]
+        self.remove_all_view(crud_section)
         datepicker = JumpToDateContentView("0-2-2-2", crud_section)
         self.view_id_dict["0-2-2-2"] = datepicker
         crud_section.content = datepicker
