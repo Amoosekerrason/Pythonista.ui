@@ -224,10 +224,37 @@ class JumpToDateContentView(ContentView):
     def __init__(self, view_id, parent_section, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
 
+    def show_content(self):
+        self.frame = (
+            self.x,
+            self.y,
+            self.parent_section.width,
+            self.parent_section.height,
+        )
+        datepicker = DatePicker()
+        datepicker.frame = (
+            self.x,
+            self.y,
+            self.superview.width / 2,
+            self.superview.height / 2,
+        )
+        self.add_subview(datepicker)
+
 
 class JumpToDateSectionView(SectionView):
     def __init__(self, view_id, parent_section, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
+        self.content = None
+
+    def set_content(self):
+        self.frame = (
+            self.parent_section.x,
+            self.parent_section.height * 3 / 4,
+            self.parent_section.width,
+            self.parent_section.height,
+        )
+        if self.content:
+            self.add_subview(self.content)
 
 
 class SelectMonthContentView(ContentView):
@@ -292,7 +319,7 @@ class SelectMonthContentView(ContentView):
             self.middle_btn.title = f"{self.parent_section.year-1911}/{self.parent_section.month}/{self.parent_section.day}"
 
     def middle_on_click(self, sender):
-        pass
+        self.parent_section.crud_to_date_picker()
 
     def next_on_click(self, sender):
         if self.parent_section:
@@ -356,6 +383,9 @@ class SelectMonthSectionView(SectionView):
         self.year, self.month, self.day = date[0], date[1], date[2]
         self.btns.handled_date(date)
 
+    def crud_to_date_picker(self):
+        self.parent_section.crud_to_date_picker()
+
 
 class BelowSectionView(SectionView):
 
@@ -396,6 +426,9 @@ class BelowSectionView(SectionView):
             if type(view) == SelectMonthSectionView:
                 view.handled_date(date)
 
+    def crud_to_date_picker(self):
+        self.parent_section.crud_to_date_picker()
+
 
 class MainSectionView(SectionView):
 
@@ -431,6 +464,9 @@ class MainSectionView(SectionView):
         except Exception as e:
             return Err(str(e))
 
+    def crud_to_date_picker(self):
+        self.parent_section.crud_to_date_picker()
+
     def change_month(self, year, month, date) -> Result[tuple[int, int, int], str]:
         try:
             self.name = f"{month}月"
@@ -450,6 +486,13 @@ class Program:
     def __init__(self):
         self.calender_date = None
         self.view_id_dict = {}
+
+    def crud_to_date_picker(self):
+        crud_section = self.view_id_dict["0-2-2"]
+        datepicker = JumpToDateContentView("0-2-2-2", crud_section)
+        self.view_id_dict["0-2-2-2"] = datepicker
+        crud_section.content = datepicker
+        crud_section.set_content()
 
     def get_select_month_section(self, year, month, day, section: SectionView = None):
         select_month_section = SelectMonthSectionView(

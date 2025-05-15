@@ -8,16 +8,13 @@ CONTENT_MODE_SCALE_TO_FILL: int
 CONTENT_MODE_SCALE_ASPECT_FIT: int
 CONTENT_MODE_SCALE_ASPECT_FILL: int
 
-
 def get_screen_size() -> tuple[int, int]: ...
 def open_url(url: str) -> None: ...
 def set_clipboard(text: str) -> None: ...
 def get_clipboard() -> str: ...
 
-
 class Color:
     def __init__(self, r: float, g: float, b: float, a: float = 1.0): ...
-
 
 class View:
     alpha: float
@@ -46,14 +43,21 @@ class View:
     def remove_subview(self, view: "View") -> None: ...
     def bring_to_front(self) -> None: ...
     def send_to_back(self) -> None: ...
-    def present(self, style: str = 'default', animated: bool = True, popover_location=None, hide_title_bar: bool = False,
-                title_bar_color: str = None, title_color: str = None, orientations=None, hide_close_button=False) -> None: ...
-
+    def present(
+        self,
+        style: str = "default",
+        animated: bool = True,
+        popover_location=None,
+        hide_title_bar: bool = False,
+        title_bar_color: str = None,
+        title_color: str = None,
+        orientations=None,
+        hide_close_button=False,
+    ) -> None: ...
     def close(self) -> None: ...
     def layout(self) -> None: ...
     def set_needs_display(self) -> None: ...
     def wait_modal(self) -> any: ...
-
 
 class Label(View):
     text: str
@@ -63,7 +67,6 @@ class Label(View):
     number_of_lines: int
     line_break_mode: int
 
-
 class Button(View):
     title: str
     image: Optional[any]
@@ -72,12 +75,10 @@ class Button(View):
     enabled: bool
     action: Optional[Callable[["Button"], None]]
 
-
 class ImageView(View):
     image: Optional[any]
     content_mode: int
     flex: str
-
 
 class TextField(View):
     text: str
@@ -90,14 +91,12 @@ class TextField(View):
     enabled: bool
     delegate: Optional[any]
 
-
 class TextView(View):
     text: str
     font: tuple[str, float]
     text_color: str
     editable: bool
     delegate: Optional[any]
-
 
 class Slider(View):
     value: float
@@ -106,11 +105,9 @@ class Slider(View):
     continuous: bool
     action: Optional[Callable[["Slider"], None]]
 
-
 class Switch(View):
     value: bool
     action: Optional[Callable[["Switch"], None]]
-
 
 class TableView(View):
     data_source: Optional[any]
@@ -122,8 +119,11 @@ class TableView(View):
     flex: str
     def reload(self) -> None: ...
 
-
 class TableViewCell(View):
     text_label: Label
     image_view: ImageView
     accessory_type: int
+
+class DatePicker(View):
+    action: Optional[Callable[["DatePicker"], None]]
+    enabled: bool
