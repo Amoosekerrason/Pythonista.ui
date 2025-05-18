@@ -220,6 +220,10 @@ class CRUDSectionView(SectionView):
         if self.content:
             self.add_subview(self.content)
 
+    def go_to_date(self, date: tuple[int, int, int]):
+        self.parent_section.go_to_date(date)
+        self.parent_section.handled_date(date)
+
 
 class JumpToDateContentView(ContentView):
 
@@ -235,22 +239,29 @@ class JumpToDateContentView(ContentView):
             self.parent_section.height,
         )
         self.background_color = "white"
-        datepicker = DatePicker()
-        datepicker.mode = DATE_PICKER_MODE_DATE
-        datepicker.frame = (
+        self.datepicker = DatePicker()
+        self.datepicker.mode = DATE_PICKER_MODE_DATE
+        self.datepicker.frame = (
             self.parent_section.width / 4 - 50,
             self.parent_section.height / 4 - 10,
             self.parent_section.width / 2,
             self.parent_section.height / 2,
         )
-        self.add_subview(datepicker)
+        self.add_subview(self.datepicker)
         confirm_btn = Button()
         confirm_btn.title = "前往"
         confirm_btn.frame = (self.parent_section.width / 4+75,
                              self.parent_section.height / 4 - 10,
                              self.parent_section.width / 2,
                              self.parent_section.height / 2)
+        confirm_btn.action = self.go_to_date
         self.add_subview(confirm_btn)
+
+    def go_to_date(self, sender):
+        date = (self.datepicker.date.year,
+                self.datepicker.date.month, self.datepicker.date.day)
+        print(date)
+        self.parent_section.go_to_date(date)
 
 
 class JumpToDateSectionView(SectionView):
@@ -330,7 +341,7 @@ class SelectMonthContentView(ContentView):
                 self.parent_section.month,
                 self.parent_section.day,
             )
-            self.middle_btn.title = f"{self.parent_section.year-1911}/{self.parent_section.month}/{self.parent_section.day}"
+            self.middle_btn.title = f"{self.parent_section.year}/{self.parent_section.month}/{self.parent_section.day}"
 
     def middle_on_click(self, sender):
         self.parent_section.crud_to_date_picker()
@@ -346,10 +357,10 @@ class SelectMonthContentView(ContentView):
                 self.parent_section.month,
                 self.parent_section.day,
             )
-            self.middle_btn.title = f"{self.parent_section.year-1911}/{self.parent_section.month}/{self.parent_section.day}"
+            self.middle_btn.title = f"{self.parent_section.year}/{self.parent_section.month}/{self.parent_section.day}"
 
     def handled_date(self, date: tuple[int, int, int]):
-        self.middle_btn.title = f"{date[0]-1911}/{date[1]}/{date[2]}"
+        self.middle_btn.title = f"{date[0]}/{date[1]}/{date[2]}"
 
 
 class SelectMonthSectionView(SectionView):
@@ -443,6 +454,9 @@ class BelowSectionView(SectionView):
     def crud_to_date_picker(self):
         self.parent_section.crud_to_date_picker()
 
+    def go_to_date(self, date: tuple[int, int, int]):
+        self.parent_section.change_month(date[0], date[1], date[2])
+
 
 class MainSectionView(SectionView):
 
@@ -507,7 +521,7 @@ class Program:
         crud_section = self.view_id_dict["0-2-2"]
         self.remove_all_view(crud_section)
         datepicker = JumpToDateContentView("0-2-2-2", crud_section)
-        self.view_id_dict["0-2-2-2"] = datepicker
+        self.register_view(datepicker)
         crud_section.content = datepicker
         crud_section.set_content()
         # datepicker.present("sheet")
@@ -598,6 +612,11 @@ class Program:
             self.remove_all_view(view)
             section.remove_subview(view)
 
+    def register_view(self, view):
+      self.view_id_dict[view.view_id] = view
+      with open("view_id.txt", "a") as f:
+          f.write(f"{view.view_id}:{view.__class__.__name__}\n")
+          
     def present(self, main_section: MainSectionView):
         main_section.present("fullscreen")
 
@@ -619,6 +638,7 @@ class Program:
             ):
                 view = program.view_id_dict[i]
                 f.write(f"{i}:{view.__class__.__name__}\n")
+        
 
 
 if __name__ == "__main__":
@@ -635,4 +655,5 @@ if __name__ == "__main__":
     TOP_SECTION_RATIO = 4 / 7
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
     COLOR_TOGGLE = False
-    Program.main()
+    Program().main()
+    
