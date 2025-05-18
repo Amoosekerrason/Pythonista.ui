@@ -113,8 +113,7 @@ class CalendarContentView(ContentView):
         self.previous_selected_btn = sender
         self.selected_btn = sender
         if self.parent_section:
-            self.parent_section.handle_date(
-                self.year, self.month, int(sender.title))
+            self.parent_section.handle_date(self.year, self.month, int(sender.title))
 
 
 class TopSectionView(SectionView):
@@ -250,16 +249,21 @@ class JumpToDateContentView(ContentView):
         self.add_subview(self.datepicker)
         confirm_btn = Button()
         confirm_btn.title = "前往"
-        confirm_btn.frame = (self.parent_section.width / 4+75,
-                             self.parent_section.height / 4 - 10,
-                             self.parent_section.width / 2,
-                             self.parent_section.height / 2)
+        confirm_btn.frame = (
+            self.parent_section.width / 4 + 75,
+            self.parent_section.height / 4 - 10,
+            self.parent_section.width / 2,
+            self.parent_section.height / 2,
+        )
         confirm_btn.action = self.go_to_date
         self.add_subview(confirm_btn)
 
     def go_to_date(self, sender):
-        date = (self.datepicker.date.year,
-                self.datepicker.date.month, self.datepicker.date.day)
+        date = (
+            self.datepicker.date.year,
+            self.datepicker.date.month,
+            self.datepicker.date.day,
+        )
         print(date)
         self.parent_section.go_to_date(date)
 
@@ -312,8 +316,7 @@ class SelectMonthContentView(ContentView):
             btn_y = (self.parent_section.height - btn_height) / 2
 
             last_btn.frame = (left_btn_x, btn_y, side_btn_width, btn_height)
-            middle_btn.frame = (middle_btn_x, btn_y,
-                                middle_btn_width, btn_height)
+            middle_btn.frame = (middle_btn_x, btn_y, middle_btn_width, btn_height)
             next_btn.frame = (right_btn_x, btn_y, side_btn_width, btn_height)
 
             last_btn.title = "上月"
@@ -483,8 +486,7 @@ class MainSectionView(SectionView):
         if self.below_section:
             self.add_subview(self.below_section)
 
-    def handle_date(self, year, month,
-                    date) -> Result[tuple[int, int, int], str]:
+    def handle_date(self, year, month, date) -> Result[tuple[int, int, int], str]:
         handled_date = (year, month, date)
         try:
             self.handled_date = handled_date
@@ -496,8 +498,7 @@ class MainSectionView(SectionView):
     def crud_to_date_picker(self):
         self.parent_section.crud_to_date_picker()
 
-    def change_month(self, year, month,
-                     date) -> Result[tuple[int, int, int], str]:
+    def change_month(self, year, month, date) -> Result[tuple[int, int, int], str]:
         try:
             self.name = f"{month}月"
             # self.remove_subview(self.top_section)
@@ -526,11 +527,7 @@ class Program:
         crud_section.set_content()
         # datepicker.present("sheet")
 
-    def get_select_month_section(self,
-                                 year,
-                                 month,
-                                 day,
-                                 section: SectionView = None):
+    def get_select_month_section(self, year, month, day, section: SectionView = None):
         select_month_section = SelectMonthSectionView(
             "0-2-1",
             section,
@@ -538,10 +535,10 @@ class Program:
             month,
             day,
         )
-        select_month_btns = SelectMonthContentView(
-            "0-2-1-1", select_month_section)
-        self.view_id_dict[select_month_section.view_id] = select_month_section
-        self.view_id_dict[select_month_btns.view_id] = select_month_btns
+        select_month_btns = SelectMonthContentView("0-2-1-1", select_month_section)
+        self.register_view(select_month_section)
+        self.register_view(select_month_btns)
+
         select_month_section.btns = select_month_btns
         select_month_section.set_content()
         return select_month_section
@@ -549,27 +546,27 @@ class Program:
     def get_crud_section(self, section: SectionView = None):
         crud_section = CRUDSectionView("0-2-2", self.below_section)
         crud_content = CRUDContentView("0-2-2-1", crud_section)
-        self.view_id_dict[crud_section.view_id] = crud_section
-        self.view_id_dict[crud_content.view_id] = crud_content
+
+        self.register_view(crud_section)
+
+        self.register_view(crud_content)
+
         crud_section.content = crud_content
         crud_section.set_content()
         return crud_section
 
-    def show_calendar(self,
-                      year,
-                      month,
-                      day,
-                      section: SectionView = None) -> SectionView:
+    def show_calendar(
+        self, year, month, day, section: SectionView = None
+    ) -> SectionView:
 
-        header_view = CalendarHeaderContentView(
-            "0-1-1", parent_section=section)
-        body_view = CalendarContentView("0-1-2",
-                                        parent_section=section,
-                                        year=year,
-                                        month=month,
-                                        day=day)
-        self.view_id_dict[header_view.view_id] = header_view
-        self.view_id_dict[body_view.view_id] = body_view
+        header_view = CalendarHeaderContentView("0-1-1", parent_section=section)
+        body_view = CalendarContentView(
+            "0-1-2", parent_section=section, year=year, month=month, day=day
+        )
+
+        self.register_view(header_view)
+
+        self.register_view(body_view)
 
         section.header_content = header_view
         section.body_content = body_view
@@ -577,13 +574,10 @@ class Program:
         section.add_subview(section.body_content)
         return section
 
-    def show_interface(self,
-                       year,
-                       month,
-                       day,
-                       section: SectionView = None) -> SectionView:
-        select_month_section = self.get_select_month_section(
-            year, month, day, section)
+    def show_interface(
+        self, year, month, day, section: SectionView = None
+    ) -> SectionView:
+        select_month_section = self.get_select_month_section(year, month, day, section)
 
         crud_section = self.get_crud_section(section)
         section.interface_section_list.append(select_month_section)
@@ -595,14 +589,14 @@ class Program:
         self.top_section = TopSectionView("0-1", main_section)
         self.top_section.x = 0
         self.top_section.y = 0
-        self.view_id_dict[self.top_section.view_id] = self.top_section
+        self.register_view(self.top_section)
         self.below_section = BelowSectionView("0-2", main_section)
         self.below_section.x = 0
         self.below_section.y = self.top_section.height
-        self.view_id_dict[self.below_section.view_id] = self.below_section
+
+        self.register_view(self.below_section)
         top_content = self.show_calendar(year, month, day, self.top_section)
-        below_content = self.show_interface(
-            year, month, day, self.below_section)
+        below_content = self.show_interface(year, month, day, self.below_section)
         main_section.top_section = top_content
         main_section.below_section = below_content
         main_section.set_content()
@@ -613,10 +607,10 @@ class Program:
             section.remove_subview(view)
 
     def register_view(self, view):
-      self.view_id_dict[view.view_id] = view
-      with open("view_id.txt", "a") as f:
-          f.write(f"{view.view_id}:{view.__class__.__name__}\n")
-          
+        self.view_id_dict[view.view_id] = view
+        with open("view_id.txt", "a") as f:
+            f.write(f"{view.view_id}:{view.__class__.__name__}\n")
+
     def present(self, main_section: MainSectionView):
         main_section.present("fullscreen")
 
@@ -638,7 +632,6 @@ class Program:
             ):
                 view = program.view_id_dict[i]
                 f.write(f"{i}:{view.__class__.__name__}\n")
-        
 
 
 if __name__ == "__main__":
@@ -656,4 +649,3 @@ if __name__ == "__main__":
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
     COLOR_TOGGLE = False
     Program().main()
-    
