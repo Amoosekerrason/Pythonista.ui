@@ -562,9 +562,8 @@ class Program:
 
     def re_crud(self):
         crud_section = self.view_id_dict["0-2-2"]
-        crud_content = self.view_id_dict["0-2-2-1"]
         self.remove_all_view(crud_section)
-        # crud_content = CRUDContentView("0-2-2-1", crud_section)
+        crud_content = CRUDContentView("0-2-2-1", crud_section)
         crud_section.content = crud_content
         crud_section.set_content()
 
