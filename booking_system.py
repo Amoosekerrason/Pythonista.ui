@@ -264,7 +264,6 @@ class JumpToDateContentView(ContentView):
             self.datepicker.date.month,
             self.datepicker.date.day,
         )
-        print(date)
         self.parent_section.go_to_date(date)
 
 
@@ -339,7 +338,7 @@ class SelectMonthContentView(ContentView):
             if self.parent_section.month == 0:
                 self.parent_section.month = 12
                 self.parent_section.year -= 1
-            self.parent_section.change_month(
+            self.parent_section.change_month_and_to_date(
                 self.parent_section.year,
                 self.parent_section.month,
                 self.parent_section.day,
@@ -355,7 +354,7 @@ class SelectMonthContentView(ContentView):
             if self.parent_section.month == 13:
                 self.parent_section.month = 1
                 self.parent_section.year += 1
-            self.parent_section.change_month(
+            self.parent_section.change_month_and_to_date(
                 self.parent_section.year,
                 self.parent_section.month,
                 self.parent_section.day,
@@ -403,9 +402,9 @@ class SelectMonthSectionView(SectionView):
         if self.parent_section:
             self.parent_section.handle_date(year, month, day)
 
-    def change_month(self, year, month, date):
+    def change_month_and_to_date(self, year, month, date):
         if self.parent_section:
-            self.parent_section.change_month(year, month, date)
+            self.parent_section.change_month_and_to_date(year, month, date)
 
     def handled_date(self, date: tuple[int, int, int]):
         self.year, self.month, self.day = date[0], date[1], date[2]
@@ -445,9 +444,9 @@ class BelowSectionView(SectionView):
             else:
                 print("Failed", res.err)
 
-    def change_month(self, year, month, date):
+    def change_month_and_to_date(self, year, month, date):
         if self.parent_section:
-            self.parent_section.change_month(year, month, date)
+            self.parent_section.change_month_and_to_date(year, month, date)
 
     def handled_date(self, date: tuple[int, int, int]):
         for view in self.interface_section_list:
@@ -458,7 +457,8 @@ class BelowSectionView(SectionView):
         self.parent_section.crud_to_date_picker()
 
     def go_to_date(self, date: tuple[int, int, int]):
-        self.parent_section.change_month(date[0], date[1], date[2])
+        self.parent_section.change_month_and_to_date(date[0], date[1], date[2])
+        self.parent_section.re_crud()
 
 
 class MainSectionView(SectionView):
@@ -498,7 +498,9 @@ class MainSectionView(SectionView):
     def crud_to_date_picker(self):
         self.parent_section.crud_to_date_picker()
 
-    def change_month(self, year, month, date) -> Result[tuple[int, int, int], str]:
+    def change_month_and_to_date(
+        self, year, month, date
+    ) -> Result[tuple[int, int, int], str]:
         try:
             self.name = f"{month}月"
             # self.remove_subview(self.top_section)
@@ -510,6 +512,9 @@ class MainSectionView(SectionView):
             return Ok((year, month, int(date)))
         except Exception as e:
             return Err(str(e))
+
+    def re_crud(self):
+        self.parent_section.re_crud()
 
 
 class Program:
@@ -554,6 +559,14 @@ class Program:
         crud_section.content = crud_content
         crud_section.set_content()
         return crud_section
+
+    def re_crud(self):
+        crud_section = self.view_id_dict["0-2-2"]
+        crud_content = self.view_id_dict["0-2-2-1"]
+        self.remove_all_view(crud_section)
+        # crud_content = CRUDContentView("0-2-2-1", crud_section)
+        crud_section.content = crud_content
+        crud_section.set_content()
 
     def show_calendar(
         self, year, month, day, section: SectionView = None
