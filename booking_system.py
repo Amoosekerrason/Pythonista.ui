@@ -1,3 +1,4 @@
+# region import
 try:
     from ui import *  # type: ignore
 except ImportError:
@@ -6,6 +7,9 @@ import datetime as dt
 import calendar as cl
 from result import *
 from abstract_class import *
+# endregion
+
+# region Calandar
 
 
 class CalendarHeaderContentView(ContentView):
@@ -115,49 +119,9 @@ class CalendarContentView(ContentView):
         if self.parent_section:
             self.parent_section.handle_date(
                 self.year, self.month, int(sender.title))
+# endregion
 
-
-class TopSectionView(SectionView):
-
-    def __init__(
-        self,
-        view_id,
-        parent_section,
-        year=None,
-        month=None,
-        header_content: ContentView = None,
-        body_content: ContentView = None,
-    ):
-        super().__init__(view_id, parent_section)
-
-        self.parent_section = parent_section
-        if COLOR_TOGGLE:
-            self.background_color = "blue"
-        self.header_content = header_content
-        self.body_content = body_content
-        self.set_content()
-
-    def set_content(self):
-        if not self.parent_section:
-            return
-        self.frame = (
-            self.x,
-            self.y,
-            self.parent_section.width,
-            self.parent_section.height * TOP_SECTION_RATIO,
-        )
-        if self.header_content:
-            self.add_subview(self.header_content)
-        if self.body_content:
-            self.add_subview(self.body_content)
-
-    def handle_date(self, year, month, date):
-        if self.parent_section:
-            res = self.parent_section.handle_date(year, month, date)
-            if res.is_ok():
-                print("Succesed", res.val)
-            else:
-                print("Failed", res.err)
+# region Interface
 
 
 class CRUDContentView(ContentView):
@@ -272,6 +236,9 @@ class JumpToDateContentView(ContentView):
             self.datepicker.date.day,
         )
         self.parent_section.go_to_date(date)
+# endregion
+
+# region Select Month
 
 
 class SelectMonthContentView(ContentView):
@@ -403,6 +370,52 @@ class SelectMonthSectionView(SectionView):
 
     def crud_to_date_picker(self):
         self.parent_section.crud_to_date_picker()
+# endregion
+
+# region Primary Section
+
+
+class TopSectionView(SectionView):
+
+    def __init__(
+        self,
+        view_id,
+        parent_section,
+        year=None,
+        month=None,
+        header_content: ContentView = None,
+        body_content: ContentView = None,
+    ):
+        super().__init__(view_id, parent_section)
+
+        self.parent_section = parent_section
+        if COLOR_TOGGLE:
+            self.background_color = "blue"
+        self.header_content = header_content
+        self.body_content = body_content
+        self.set_content()
+
+    def set_content(self):
+        if not self.parent_section:
+            return
+        self.frame = (
+            self.x,
+            self.y,
+            self.parent_section.width,
+            self.parent_section.height * TOP_SECTION_RATIO,
+        )
+        if self.header_content:
+            self.add_subview(self.header_content)
+        if self.body_content:
+            self.add_subview(self.body_content)
+
+    def handle_date(self, year, month, date):
+        if self.parent_section:
+            res = self.parent_section.handle_date(year, month, date)
+            if res.is_ok():
+                print("Succesed", res.val)
+            else:
+                print("Failed", res.err)
 
 
 class BelowSectionView(SectionView):
@@ -508,6 +521,34 @@ class MainSectionView(SectionView):
 
     def re_crud(self):
         self.parent_section.re_crud()
+# endregion
+
+# region System-level Class
+
+
+class ViewFactory:
+    _types = {"main": MainSectionView,
+              "below": BelowSectionView,
+              "top": TopSectionView,
+              "select month section": SelectMonthSectionView,
+              "select month content": SelectMonthContentView,
+              "jump to date content": JumpToDateContentView,
+              "crud section": CRUDSectionView,
+              "crud content": CRUDContentView,
+              "calendar content": CalendarContentView,
+              "calandar header content": CalendarHeaderContentView}
+
+    @staticmethod
+    def produce_product(type: str, *args, **kwargs) -> Result[View, str]:
+        view_class = ViewFactory._types.get(type)
+        if not view_class:
+            return Err(f'unknown view type:{type}')
+
+        try:
+            instance = view_class(*args, **kwargs)
+            return Ok(instance)
+        except Exception as e:
+            return Err(f'failed to create view: {e}')
 
 
 class Program:
@@ -645,19 +686,10 @@ class Program:
         #     ):
         #         view = program.view_id_dict[i]
         #         f.write(f"{i}:{view.__class__.__name__}\n")
+# endregion
 
 
 if __name__ == "__main__":
-    # SCREEN_WIDTH = 375
-    # SCREEN_HEIGHT = 603
-    # TOP_SECTION_WIDTH = SCREEN_WIDTH
-    # TOP_SECTION_HEIGHT = SCREEN_HEIGHT * 4 / 7
-    # TOP_SECTION_X = 0
-    # TOP_SECTION_Y = 0
-    # BELOW_SECTION_WIDTH = SCREEN_WIDTH
-    # BELOW_SECTION_HEIGHT = SCREEN_HEIGHT * 3 / 7
-    # BELOW_SECTION_X = 0
-    # BELOW_SECTION_Y = TOP_SECTION_HEIGHT
     TOP_SECTION_RATIO = 4 / 7
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
     COLOR_TOGGLE = False
