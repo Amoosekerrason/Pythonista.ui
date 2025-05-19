@@ -113,7 +113,8 @@ class CalendarContentView(ContentView):
         self.previous_selected_btn = sender
         self.selected_btn = sender
         if self.parent_section:
-            self.parent_section.handle_date(self.year, self.month, int(sender.title))
+            self.parent_section.handle_date(
+                self.year, self.month, int(sender.title))
 
 
 class TopSectionView(SectionView):
@@ -273,25 +274,6 @@ class JumpToDateContentView(ContentView):
         self.parent_section.go_to_date(date)
 
 
-class JumpToDateSectionView(SectionView):
-
-    def __init__(self, view_id, parent_section, x=0, y=0):
-        super().__init__(view_id, parent_section, x, y)
-        self.content = None
-
-    def set_content(self):
-        if not self.parent_section:
-            return
-        self.frame = (
-            self.parent_section.x,
-            self.parent_section.height * 3 / 4,
-            self.parent_section.width,
-            self.parent_section.height,
-        )
-        if self.content:
-            self.add_subview(self.content)
-
-
 class SelectMonthContentView(ContentView):
 
     def __init__(
@@ -323,7 +305,8 @@ class SelectMonthContentView(ContentView):
             btn_y = (self.parent_section.height - btn_height) / 2
 
             last_btn.frame = (left_btn_x, btn_y, side_btn_width, btn_height)
-            middle_btn.frame = (middle_btn_x, btn_y, middle_btn_width, btn_height)
+            middle_btn.frame = (middle_btn_x, btn_y,
+                                middle_btn_width, btn_height)
             next_btn.frame = (right_btn_x, btn_y, side_btn_width, btn_height)
 
             last_btn.title = "上月"
@@ -550,7 +533,8 @@ class Program:
             month,
             day,
         )
-        select_month_btns = SelectMonthContentView("0-2-1-1", select_month_section)
+        select_month_btns = SelectMonthContentView(
+            "0-2-1-1", select_month_section)
         self.register_view(select_month_section)
         self.register_view(select_month_btns)
 
@@ -581,7 +565,8 @@ class Program:
         self, year, month, day, section: SectionView = None
     ) -> SectionView:
 
-        header_view = CalendarHeaderContentView("0-1-1", parent_section=section)
+        header_view = CalendarHeaderContentView(
+            "0-1-1", parent_section=section)
         body_view = CalendarContentView(
             "0-1-2", parent_section=section, year=year, month=month, day=day
         )
@@ -599,7 +584,8 @@ class Program:
     def show_interface(
         self, year, month, day, section: SectionView = None
     ) -> SectionView:
-        select_month_section = self.get_select_month_section(year, month, day, section)
+        select_month_section = self.get_select_month_section(
+            year, month, day, section)
 
         crud_section = self.get_crud_section(section)
         section.interface_section_list.append(select_month_section)
@@ -618,7 +604,8 @@ class Program:
 
         self.register_view(self.below_section)
         top_content = self.show_calendar(year, month, day, self.top_section)
-        below_content = self.show_interface(year, month, day, self.below_section)
+        below_content = self.show_interface(
+            year, month, day, self.below_section)
         main_section.top_section = top_content
         main_section.below_section = below_content
         main_section.set_content()
