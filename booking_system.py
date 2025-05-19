@@ -634,7 +634,7 @@ class Program:
         with open("view_id.txt", "w") as f:
             f.write("View ID Registry:\n")
         main_section = MainSectionView("0", program)
-        program.view_id_dict[main_section.view_id] = main_section
+        program.register_view(main_section)
         program.entry_screen(
             main_section,
             dt.datetime.now().year,
