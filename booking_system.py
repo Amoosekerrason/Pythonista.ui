@@ -619,16 +619,20 @@ class Program:
             section.remove_subview(view)
 
     def register_view(self, view):
-        self.view_id_dict[view.view_id] = view
-        with open("view_id.txt", "a") as f:
-            f.write(f"{view.view_id}:{view.__class__.__name__}\n")
+        if view.view_id not in self.view_id_dict.keys():
+            self.view_id_dict[view.view_id] = view
+            with open("view_id.txt", "a") as f:
+                f.write(f"{view.view_id}:{view.__class__.__name__}\n")
 
     def present(self, main_section: MainSectionView):
         main_section.present("fullscreen")
 
     @staticmethod
     def main():
+
         program = Program()
+        with open("view_id.txt", "w") as f:
+            f.write("View ID Registry:\n")
         main_section = MainSectionView("0", program)
         program.view_id_dict[main_section.view_id] = main_section
         program.entry_screen(
@@ -637,13 +641,13 @@ class Program:
             dt.datetime.now().month,
             dt.datetime.now().day,
         )
-        with open("view_id.txt", "w") as f:
-            for i in sorted(
-                program.view_id_dict.keys(),
-                key=lambda k: [int(x) for x in k.split("-")],
-            ):
-                view = program.view_id_dict[i]
-                f.write(f"{i}:{view.__class__.__name__}\n")
+        # with open("view_id.txt", "w") as f:
+        #     for i in sorted(
+        #         program.view_id_dict.keys(),
+        #         key=lambda k: [int(x) for x in k.split("-")],
+        #     ):
+        #         view = program.view_id_dict[i]
+        #         f.write(f"{i}:{view.__class__.__name__}\n")
 
 
 if __name__ == "__main__":
