@@ -166,6 +166,8 @@ class CRUDContentView(ContentView):
         self.show_content()
 
     def show_content(self):
+        if not self.parent_section:
+            return
         self.frame = (
             self.x,
             self.y,
@@ -208,6 +210,8 @@ class CRUDSectionView(SectionView):
         self.set_content()
 
     def set_content(self):
+        if not self.parent_section:
+            return
         self.frame = (
             self.x,
             self.parent_section.height / 4,
@@ -231,6 +235,8 @@ class JumpToDateContentView(ContentView):
         self.show_content()
 
     def show_content(self):
+        if not self.parent_section:
+            return
         self.frame = (
             self.x,
             self.y,
@@ -274,6 +280,8 @@ class JumpToDateSectionView(SectionView):
         self.content = None
 
     def set_content(self):
+        if not self.parent_section:
+            return
         self.frame = (
             self.parent_section.x,
             self.parent_section.height * 3 / 4,
@@ -481,6 +489,8 @@ class MainSectionView(SectionView):
         self.present("fullscreen")
 
     def set_content(self):
+        if not self.parent_section:
+            return
         if self.top_section:
             self.add_subview(self.top_section)
         if self.below_section:
