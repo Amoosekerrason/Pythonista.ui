@@ -527,22 +527,24 @@ class MainSectionView(SectionView):
 
 
 class ViewFactory:
-    _types = {"main": MainSectionView,
-              "below": BelowSectionView,
-              "top": TopSectionView,
-              "select month section": SelectMonthSectionView,
-              "select month content": SelectMonthContentView,
-              "jump to date content": JumpToDateContentView,
-              "crud section": CRUDSectionView,
-              "crud content": CRUDContentView,
-              "calendar content": CalendarContentView,
-              "calandar header content": CalendarHeaderContentView}
+    _types = {
+        "main": MainSectionView,
+        "below": BelowSectionView,
+        "top": TopSectionView,
+        "select month section": SelectMonthSectionView,
+        "select month content": SelectMonthContentView,
+        "jump to date content": JumpToDateContentView,
+        "crud section": CRUDSectionView,
+        "crud content": CRUDContentView,
+        "calendar content": CalendarContentView,
+        "calandar header content": CalendarHeaderContentView
+    }
 
     @staticmethod
     def produce_product(type: str, *args, **kwargs) -> Result[View, str]:
         view_class = ViewFactory._types.get(type)
         if not view_class:
-            return Err(f'unknown view type:{type}')
+            return Err(f'unknown view type: {type}')
 
         try:
             instance = view_class(*args, **kwargs)
@@ -557,50 +559,33 @@ class Program:
         self.calender_date = None
         self.view_id_dict = {}
 
-    def crud_to_date_picker(self):
-        crud_section = self.view_id_dict["0-2-2"]
-        self.remove_all_view(crud_section)
-        datepicker = JumpToDateContentView("0-2-2-2", crud_section)
-        self.register_view(datepicker)
-        crud_section.content = datepicker
-        crud_section.set_content()
-        # datepicker.present("sheet")
+    def entry_screen(self, main_section: SectionView, year, month, day):
+        top_section_res = ViewFactory.produce_product(
+            "top", "0-1", main_section)
+        if top_section_res.is_ok():
+            self.top_section = top_section_res.val
+            self.top_section.x = 0
+            self.top_section.y = 0
+            self.register_view(self.top_section)
+            below_section_res = ViewFactory.produce_product(
+                "below", "0-2", main_section)
+            if below_section_res.is_ok():
+                self.below_section = below_section_res.val
+                self.below_section.x = 0
+                self.below_section.y = self.top_section.height
+                self.register_view(self.below_section)
+                top_content = self.show_calendar(
+                    year, month, day, self.top_section)
+                below_content = self.show_interface(
+                    year, month, day, self.below_section)
+                main_section.top_section = top_content
+                main_section.below_section = below_content
+                main_section.set_content()
+            else:
+                print(f"below building goes wrong: {below_section_res.err}")
+        else:
+            print(f"top building goes wrong: {top_section_res.err}")
 
-    def get_select_month_section(self, year, month, day, section: SectionView = None):
-        select_month_section = SelectMonthSectionView(
-            "0-2-1",
-            section,
-            year,
-            month,
-            day,
-        )
-        select_month_btns = SelectMonthContentView(
-            "0-2-1-1", select_month_section)
-        self.register_view(select_month_section)
-        self.register_view(select_month_btns)
-
-        select_month_section.btns = select_month_btns
-        select_month_section.set_content()
-        return select_month_section
-
-    def get_crud_section(self, section: SectionView = None):
-        crud_section = CRUDSectionView("0-2-2", self.below_section)
-        crud_content = CRUDContentView("0-2-2-1", crud_section)
-
-        self.register_view(crud_section)
-
-        self.register_view(crud_content)
-
-        crud_section.content = crud_content
-        crud_section.set_content()
-        return crud_section
-
-    def re_crud(self):
-        crud_section = self.view_id_dict["0-2-2"]
-        self.remove_all_view(crud_section)
-        crud_content = CRUDContentView("0-2-2-1", crud_section)
-        crud_section.content = crud_content
-        crud_section.set_content()
 
     def show_calendar(
         self, year, month, day, section: SectionView = None
@@ -634,22 +619,50 @@ class Program:
         section.set_content()
         return section
 
-    def entry_screen(self, main_section: SectionView, year, month, day):
-        self.top_section = TopSectionView("0-1", main_section)
-        self.top_section.x = 0
-        self.top_section.y = 0
-        self.register_view(self.top_section)
-        self.below_section = BelowSectionView("0-2", main_section)
-        self.below_section.x = 0
-        self.below_section.y = self.top_section.height
+    def get_select_month_section(self, year, month, day, section: SectionView = None):
+        select_month_section = SelectMonthSectionView(
+            "0-2-1",
+            section,
+            year,
+            month,
+            day,
+        )
+        select_month_btns = SelectMonthContentView(
+            "0-2-1-1", select_month_section)
+        self.register_view(select_month_section)
+        self.register_view(select_month_btns)
 
-        self.register_view(self.below_section)
-        top_content = self.show_calendar(year, month, day, self.top_section)
-        below_content = self.show_interface(
-            year, month, day, self.below_section)
-        main_section.top_section = top_content
-        main_section.below_section = below_content
-        main_section.set_content()
+        select_month_section.btns = select_month_btns
+        select_month_section.set_content()
+        return select_month_section
+
+    def get_crud_section(self, section: SectionView = None):
+        crud_section = CRUDSectionView("0-2-2", self.below_section)
+        crud_content = CRUDContentView("0-2-2-1", crud_section)
+
+        self.register_view(crud_section)
+
+        self.register_view(crud_content)
+
+        crud_section.content = crud_content
+        crud_section.set_content()
+        return crud_section
+
+    def crud_to_date_picker(self):
+        crud_section = self.view_id_dict["0-2-2"]
+        self.remove_all_view(crud_section)
+        datepicker = JumpToDateContentView("0-2-2-2", crud_section)
+        self.register_view(datepicker)
+        crud_section.content = datepicker
+        crud_section.set_content()
+        # datepicker.present("sheet")
+
+    def re_crud(self):
+        crud_section = self.view_id_dict["0-2-2"]
+        self.remove_all_view(crud_section)
+        crud_content = CRUDContentView("0-2-2-1", crud_section)
+        crud_section.content = crud_content
+        crud_section.set_content()
 
     def remove_all_view(self, section: View):
         for view in section.subviews:
@@ -671,14 +684,19 @@ class Program:
         program = Program()
         with open("view_id.txt", "w") as f:
             f.write("View ID Registry:\n")
-        main_section = MainSectionView("0", program)
-        program.register_view(main_section)
-        program.entry_screen(
-            main_section,
-            dt.datetime.now().year,
-            dt.datetime.now().month,
-            dt.datetime.now().day,
-        )
+        main_section_res = ViewFactory.produce_product("main", "0", program)
+        if main_section_res.is_ok():
+            main_section = main_section_res.val
+            program.register_view(main_section)
+            program.entry_screen(
+                main_section,
+                dt.datetime.now().year,
+                dt.datetime.now().month,
+                dt.datetime.now().day,
+            )
+        else:
+            print(f'main section building goes wrong: {main_section_res.err}')
+        # main_section = MainSectionView("0", program)
         # with open("view_id.txt", "w") as f:
         #     for i in sorted(
         #         program.view_id_dict.keys(),
