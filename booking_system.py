@@ -502,14 +502,8 @@ class MainSectionView(SectionView):
             self.add_subview(self.below_section)
 
     def handle_date(self, year, month,
-                    date) -> Result[tuple[int, int, int], str]:
-        handled_date = (year, month, date)
-        try:
-            self.handled_date = handled_date
-            self.below_section.handled_date(handled_date)
-            return Ok((year, month, int(date)))
-        except Exception as e:
-            return Err(str(e))
+                    date):
+        self.parent_section.handle_date(year, month, date)
 
     def crud_to_date_picker(self):
         self.parent_section.crud_to_date_picker()
@@ -682,6 +676,18 @@ class Program:
             calendar = self.view_id_dict["0-1-2"]
             calendar.year, calendar.month, calendar.day = year, month, date
             calendar.show_content()
+            return Ok((year, month, int(date)))
+        except Exception as e:
+            return Err(str(e))
+
+    def handle_date(self, year, month,
+                    date) -> Result[tuple[int, int, int], str]:
+        handled_date = (year, month, date)
+        below_section = self.view_id_dict["0-2"]
+        main_section = self.view_id_dict["0"]
+        try:
+            main_section.handled_date = handled_date
+            below_section.handled_date(handled_date)
             return Ok((year, month, int(date)))
         except Exception as e:
             return Err(str(e))
