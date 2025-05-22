@@ -123,6 +123,31 @@ class CalendarContentView(ContentView):
 
 # endregion
 
+
+# region CRUD
+class CreateArrangementContentView(ContentView):
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+        self.show_content()
+
+    def show_content(self):
+        if not self.parent_section:
+            return
+        self.frame = (self.x, self.y, self.parent_section.width,
+                      self.parent_section.height)
+        btn_width, btn_height, btn_margin = 100, 50, 25
+        confirm_btm = Button()
+        confirm_btm.title = "送出"
+        confirm_btm.border_width = 1
+        confirm_btm.frame = (self.parent_section.width-btn_width-btn_margin,
+                             self.parent_section.height-btn_height-btn_margin, btn_width, btn_height)
+        confirm_btm.action = self.re_crud
+        self.add_subview(confirm_btm)
+
+    def re_crud(self, sender):
+        self.parent_section.re_crud()
+# endregion
+
 # region Interface
 
 
@@ -160,6 +185,7 @@ class CRUDContentView(ContentView):
         SW_btn.frame = (SW_btn_x, SW_btn_y, btn_width, btn_height)
         SE_btn.frame = (SE_btn_x, SE_btn_y, btn_width, btn_height)
         NW_btn.title = "建立預約"
+        NW_btn.action = self.create_arrangement_content
         NE_btn.title = "修改預約"
         SW_btn.title = "刪除預約"
         SE_btn.title = "查詢預約"
@@ -167,6 +193,9 @@ class CRUDContentView(ContentView):
             btn.border_width = 1
             btn.background_color = "light blue"
             self.add_subview(btn)
+
+    def create_arrangement_content(self, sender):
+        self.parent_section.create_arrangement_content()
 
 
 class CRUDSectionView(SectionView):
@@ -193,6 +222,12 @@ class CRUDSectionView(SectionView):
     def go_to_date(self, date: tuple[int, int, int]):
         self.parent_section.go_to_date(date)
         self.parent_section.handled_date(date)
+
+    def create_arrangement_content(self):
+        self.parent_section.create_arrangement_content()
+
+    def re_crud(self):
+        self.parent_section.re_crud()
 
 
 class JumpToDateContentView(ContentView):
@@ -420,7 +455,6 @@ class TopSectionView(SectionView):
     def handle_date(self, year, month, date):
         if self.parent_section:
             self.parent_section.handle_date(year, month, date)
-          
 
 
 class BelowSectionView(SectionView):
@@ -470,6 +504,12 @@ class BelowSectionView(SectionView):
             date[0], date[1], date[2])
         self.parent_section.re_crud()
 
+    def create_arrangement_content(self):
+        self.parent_section.create_arrangement_content()
+
+    def re_crud(self):
+        self.parent_section.re_crud()
+
 
 class MainSectionView(SectionView):
 
@@ -512,6 +552,9 @@ class MainSectionView(SectionView):
 
     def re_crud(self):
         self.parent_section.re_crud()
+
+    def create_arrangement_content(self):
+        self.parent_section.create_arrangement_content()
 
 
 # endregion
@@ -691,6 +734,15 @@ class Program:
             return Ok((year, month, int(date)))
         except Exception as e:
             return Err(str(e))
+
+    def create_arrangement_content(self):
+        crud_section = self.view_id_dict["0-2-2"]
+        self.remove_all_view(crud_section)
+        create_arrangement_content = CreateArrangementContentView(
+            "0-2-2-3", crud_section)
+        self.register_view(create_arrangement_content)
+        crud_section.content = create_arrangement_content
+        crud_section.set_content()
 
     def remove_all_view(self, section: View):
         for view in section.subviews:
