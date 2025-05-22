@@ -419,11 +419,8 @@ class TopSectionView(SectionView):
 
     def handle_date(self, year, month, date):
         if self.parent_section:
-            res = self.parent_section.handle_date(year, month, date)
-            if res.is_ok():
-                print("Succesed", res.val)
-            else:
-                print("Failed", res.err)
+            self.parent_section.handle_date(year, month, date)
+          
 
 
 class BelowSectionView(SectionView):
@@ -485,7 +482,7 @@ class MainSectionView(SectionView):
     ):
         super().__init__(view_id, root_node)
         self.root_node = self.parent_section
-        self.name = f"{dt.datetime.now().month}月"
+        self.name = f"訂位君"
 
         self.background_color = "white"
         self.top_section = top_section
@@ -614,11 +611,15 @@ class Program:
         select_month_section = self.get_select_month_section(
             year, month, day, section)
 
-        crud_section = self.get_crud_section(section)
-        section.interface_section_list.append(select_month_section)
-        section.interface_section_list.append(crud_section)
-        section.set_content()
-        return section
+        crud_section = self.get_crud_section()
+        try:
+            section.interface_section_list.append(select_month_section)
+            section.interface_section_list.append(crud_section)
+            section.set_content()
+            return section
+        except Exception as e:
+            raise Exception(
+                f"this section doesn't have interface section list") from e
 
     def get_select_month_section(self,
                                  year,
@@ -641,7 +642,7 @@ class Program:
         select_month_section.set_content()
         return select_month_section
 
-    def get_crud_section(self, section: SectionView = None):
+    def get_crud_section(self):
         crud_section = CRUDSectionView("0-2-2", self.below_section)
         crud_content = CRUDContentView("0-2-2-1", crud_section)
 
@@ -672,7 +673,6 @@ class Program:
     def change_month_and_go_to_date(self, year, month,
                                     date) -> Result[tuple[int, int, int], str]:
         try:
-            self.name = f"{month}月"
             calendar = self.view_id_dict["0-1-2"]
             calendar.year, calendar.month, calendar.day = year, month, date
             calendar.show_content()
