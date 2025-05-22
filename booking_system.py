@@ -119,6 +119,8 @@ class CalendarContentView(ContentView):
         if self.parent_section:
             self.parent_section.handle_date(
                 self.year, self.month, int(sender.title))
+
+
 # endregion
 
 # region Interface
@@ -210,6 +212,7 @@ class JumpToDateContentView(ContentView):
         )
         self.background_color = "white"
         self.datepicker = DatePicker()
+        # self.datepicker.border_width=1
         self.datepicker.mode = DATE_PICKER_MODE_DATE
         self.datepicker.frame = (
             self.parent_section.width / 4 - 50,
@@ -219,12 +222,13 @@ class JumpToDateContentView(ContentView):
         )
         self.add_subview(self.datepicker)
         confirm_btn = Button()
+        # confirm_btn.border_width = 1
         confirm_btn.title = "前往"
         confirm_btn.frame = (
-            self.parent_section.width / 4 + 75,
-            self.parent_section.height / 4 - 10,
-            self.parent_section.width / 2,
-            self.parent_section.height / 2,
+            self.datepicker.width+50,
+            self.datepicker.height/2+16,
+            75,
+            50,
         )
         confirm_btn.action = self.go_to_date
         self.add_subview(confirm_btn)
@@ -236,6 +240,8 @@ class JumpToDateContentView(ContentView):
             self.datepicker.date.day,
         )
         self.parent_section.go_to_date(date)
+
+
 # endregion
 
 # region Select Month
@@ -296,7 +302,7 @@ class SelectMonthContentView(ContentView):
             if self.parent_section.month == 0:
                 self.parent_section.month = 12
                 self.parent_section.year -= 1
-            self.parent_section.change_month_and_to_date(
+            self.parent_section.change_month_and_go_to_date(
                 self.parent_section.year,
                 self.parent_section.month,
                 self.parent_section.day,
@@ -312,7 +318,7 @@ class SelectMonthContentView(ContentView):
             if self.parent_section.month == 13:
                 self.parent_section.month = 1
                 self.parent_section.year += 1
-            self.parent_section.change_month_and_to_date(
+            self.parent_section.change_month_and_go_to_date(
                 self.parent_section.year,
                 self.parent_section.month,
                 self.parent_section.day,
@@ -360,9 +366,9 @@ class SelectMonthSectionView(SectionView):
         if self.parent_section:
             self.parent_section.handle_date(year, month, day)
 
-    def change_month_and_to_date(self, year, month, date):
+    def change_month_and_go_to_date(self, year, month, date):
         if self.parent_section:
-            self.parent_section.change_month_and_to_date(year, month, date)
+            self.parent_section.change_month_and_go_to_date(year, month, date)
 
     def handled_date(self, date: tuple[int, int, int]):
         self.year, self.month, self.day = date[0], date[1], date[2]
@@ -370,6 +376,8 @@ class SelectMonthSectionView(SectionView):
 
     def crud_to_date_picker(self):
         self.parent_section.crud_to_date_picker()
+
+
 # endregion
 
 # region Primary Section
@@ -448,9 +456,9 @@ class BelowSectionView(SectionView):
             else:
                 print("Failed", res.err)
 
-    def change_month_and_to_date(self, year, month, date):
+    def change_month_and_go_to_date(self, year, month, date):
         if self.parent_section:
-            self.parent_section.change_month_and_to_date(year, month, date)
+            self.parent_section.change_month_and_go_to_date(year, month, date)
 
     def handled_date(self, date: tuple[int, int, int]):
         for view in self.interface_section_list:
@@ -461,7 +469,8 @@ class BelowSectionView(SectionView):
         self.parent_section.crud_to_date_picker()
 
     def go_to_date(self, date: tuple[int, int, int]):
-        self.parent_section.change_month_and_to_date(date[0], date[1], date[2])
+        self.parent_section.change_month_and_go_to_date(
+            date[0], date[1], date[2])
         self.parent_section.re_crud()
 
 
@@ -492,7 +501,8 @@ class MainSectionView(SectionView):
         if self.below_section:
             self.add_subview(self.below_section)
 
-    def handle_date(self, year, month, date) -> Result[tuple[int, int, int], str]:
+    def handle_date(self, year, month,
+                    date) -> Result[tuple[int, int, int], str]:
         handled_date = (year, month, date)
         try:
             self.handled_date = handled_date
@@ -504,23 +514,15 @@ class MainSectionView(SectionView):
     def crud_to_date_picker(self):
         self.parent_section.crud_to_date_picker()
 
-    def change_month_and_to_date(
-        self, year, month, date
-    ) -> Result[tuple[int, int, int], str]:
-        try:
-            self.name = f"{month}月"
-            # self.remove_subview(self.top_section)
-            # self.remove_subview(self.below_section)
-            # self.root_node.entry_screen(self, year, month, date)
-            calendar = self.parent_section.view_id_dict["0-1-2"]
-            calendar.year, calendar.month, calendar.day = year, month, date
-            calendar.show_content()
-            return Ok((year, month, int(date)))
-        except Exception as e:
-            return Err(str(e))
+    def change_month_and_go_to_date(self, year, month,
+                                    date):
+        self.parent_section.change_month_and_go_to_date(year, month,
+                                                        date)
 
     def re_crud(self):
         self.parent_section.re_crud()
+
+
 # endregion
 
 # region System-level Class
@@ -567,8 +569,8 @@ class Program:
             self.top_section.x = 0
             self.top_section.y = 0
             self.register_view(self.top_section)
-            below_section_res = ViewFactory.produce_product(
-                "below", "0-2", main_section)
+            below_section_res = ViewFactory.produce_product("below", "0-2",
+                                                            main_section)
             if below_section_res.is_ok():
                 self.below_section = below_section_res.val
                 self.below_section.x = 0
@@ -576,8 +578,8 @@ class Program:
                 self.register_view(self.below_section)
                 top_content = self.show_calendar(
                     year, month, day, self.top_section)
-                below_content = self.show_interface(
-                    year, month, day, self.below_section)
+                below_content = self.show_interface(year, month, day,
+                                                    self.below_section)
                 main_section.top_section = top_content
                 main_section.below_section = below_content
                 main_section.set_content()
@@ -586,16 +588,19 @@ class Program:
         else:
             print(f"top building goes wrong: {top_section_res.err}")
 
-
-    def show_calendar(
-        self, year, month, day, section: SectionView = None
-    ) -> SectionView:
+    def show_calendar(self,
+                      year,
+                      month,
+                      day,
+                      section: SectionView = None) -> SectionView:
 
         header_view = CalendarHeaderContentView(
             "0-1-1", parent_section=section)
-        body_view = CalendarContentView(
-            "0-1-2", parent_section=section, year=year, month=month, day=day
-        )
+        body_view = CalendarContentView("0-1-2",
+                                        parent_section=section,
+                                        year=year,
+                                        month=month,
+                                        day=day)
 
         self.register_view(header_view)
 
@@ -607,9 +612,11 @@ class Program:
         section.add_subview(section.body_content)
         return section
 
-    def show_interface(
-        self, year, month, day, section: SectionView = None
-    ) -> SectionView:
+    def show_interface(self,
+                       year,
+                       month,
+                       day,
+                       section: SectionView = None) -> SectionView:
         select_month_section = self.get_select_month_section(
             year, month, day, section)
 
@@ -619,7 +626,11 @@ class Program:
         section.set_content()
         return section
 
-    def get_select_month_section(self, year, month, day, section: SectionView = None):
+    def get_select_month_section(self,
+                                 year,
+                                 month,
+                                 day,
+                                 section: SectionView = None):
         select_month_section = SelectMonthSectionView(
             "0-2-1",
             section,
@@ -664,6 +675,17 @@ class Program:
         crud_section.content = crud_content
         crud_section.set_content()
 
+    def change_month_and_go_to_date(self, year, month,
+                                    date) -> Result[tuple[int, int, int], str]:
+        try:
+            self.name = f"{month}月"
+            calendar = self.view_id_dict["0-1-2"]
+            calendar.year, calendar.month, calendar.day = year, month, date
+            calendar.show_content()
+            return Ok((year, month, int(date)))
+        except Exception as e:
+            return Err(str(e))
+
     def remove_all_view(self, section: View):
         for view in section.subviews:
             self.remove_all_view(view)
@@ -704,8 +726,9 @@ class Program:
         #     ):
         #         view = program.view_id_dict[i]
         #         f.write(f"{i}:{view.__class__.__name__}\n")
-# endregion
 
+
+# endregion
 
 if __name__ == "__main__":
     TOP_SECTION_RATIO = 4 / 7
