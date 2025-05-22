@@ -123,7 +123,6 @@ class CalendarContentView(ContentView):
 
 # endregion
 
-
 # region CRUD
 class CreateArrangementContentView(ContentView):
     def __init__(self, view_id, parent_section=None, x=0, y=0):
@@ -146,9 +145,80 @@ class CreateArrangementContentView(ContentView):
 
     def re_crud(self, sender):
         self.parent_section.re_crud()
+
+
+class ReadArrangementContentView(ContentView):
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+
+    def show_content(self):
+        return super().show_content()
+
+
+class UploadArrangementContentView(ContentView):
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+
+    def show_content(self):
+        return super().show_content()
+
+
+class DeleteArrangementContentView(ContentView):
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+
+    def show_content(self):
+        return super().show_content()
 # endregion
 
 # region Interface
+
+
+class JumpToDateContentView(ContentView):
+
+    def __init__(self, view_id, parent_section, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+        self.show_content()
+
+    def show_content(self):
+        if not self.parent_section:
+            return
+        self.frame = (
+            self.x,
+            self.y,
+            self.parent_section.width,
+            self.parent_section.height,
+        )
+        self.background_color = "white"
+        self.datepicker = DatePicker()
+        # self.datepicker.border_width=1
+        self.datepicker.mode = DATE_PICKER_MODE_DATE
+        self.datepicker.frame = (
+            self.parent_section.width / 4 - 50,
+            self.parent_section.height / 4 - 10,
+            self.parent_section.width / 2,
+            self.parent_section.height / 2,
+        )
+        self.add_subview(self.datepicker)
+        confirm_btn = Button()
+        # confirm_btn.border_width = 1
+        confirm_btn.title = "前往"
+        confirm_btn.frame = (
+            self.datepicker.width+50,
+            self.datepicker.height/2+16,
+            75,
+            50,
+        )
+        confirm_btn.action = self.go_to_date
+        self.add_subview(confirm_btn)
+
+    def go_to_date(self, sender):
+        date = (
+            self.datepicker.date.year,
+            self.datepicker.date.month,
+            self.datepicker.date.day,
+        )
+        self.parent_section.go_to_date(date)
 
 
 class CRUDContentView(ContentView):
@@ -220,61 +290,17 @@ class CRUDSectionView(SectionView):
             self.add_subview(self.content)
 
     def go_to_date(self, date: tuple[int, int, int]):
+        self.remove_subview(self.content)
         self.parent_section.go_to_date(date)
         self.parent_section.handled_date(date)
 
     def create_arrangement_content(self):
+        self.remove_subview(self.content)
         self.parent_section.create_arrangement_content()
 
     def re_crud(self):
+        self.remove_subview(self.content)
         self.parent_section.re_crud()
-
-
-class JumpToDateContentView(ContentView):
-
-    def __init__(self, view_id, parent_section, x=0, y=0):
-        super().__init__(view_id, parent_section, x, y)
-        self.show_content()
-
-    def show_content(self):
-        if not self.parent_section:
-            return
-        self.frame = (
-            self.x,
-            self.y,
-            self.parent_section.width,
-            self.parent_section.height,
-        )
-        self.background_color = "white"
-        self.datepicker = DatePicker()
-        # self.datepicker.border_width=1
-        self.datepicker.mode = DATE_PICKER_MODE_DATE
-        self.datepicker.frame = (
-            self.parent_section.width / 4 - 50,
-            self.parent_section.height / 4 - 10,
-            self.parent_section.width / 2,
-            self.parent_section.height / 2,
-        )
-        self.add_subview(self.datepicker)
-        confirm_btn = Button()
-        # confirm_btn.border_width = 1
-        confirm_btn.title = "前往"
-        confirm_btn.frame = (
-            self.datepicker.width+50,
-            self.datepicker.height/2+16,
-            75,
-            50,
-        )
-        confirm_btn.action = self.go_to_date
-        self.add_subview(confirm_btn)
-
-    def go_to_date(self, sender):
-        date = (
-            self.datepicker.date.year,
-            self.datepicker.date.month,
-            self.datepicker.date.day,
-        )
-        self.parent_section.go_to_date(date)
 
 
 # endregion
@@ -708,8 +734,8 @@ class Program:
 
     def re_crud(self):
         crud_section = self.view_id_dict["0-2-2"]
-        self.remove_all_view(crud_section)
         crud_content = CRUDContentView("0-2-2-1", crud_section)
+        # crud_content = self.view_id_dict["0-2-2-1"]
         crud_section.content = crud_content
         crud_section.set_content()
 
@@ -737,7 +763,6 @@ class Program:
 
     def create_arrangement_content(self):
         crud_section = self.view_id_dict["0-2-2"]
-        self.remove_all_view(crud_section)
         create_arrangement_content = CreateArrangementContentView(
             "0-2-2-3", crud_section)
         self.register_view(create_arrangement_content)
