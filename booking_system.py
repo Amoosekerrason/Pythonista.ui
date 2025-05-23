@@ -265,7 +265,7 @@ class CRUDContentView(ContentView):
         SW_btn.frame = (SW_btn_x, SW_btn_y, btn_width, btn_height)
         SE_btn.frame = (SE_btn_x, SE_btn_y, btn_width, btn_height)
         NW_btn.title = "建立預約"
-        NW_btn.action = self.create_arrangement_content
+        NW_btn.action = self.create_create_arrangement_content
         NE_btn.title = "修改預約"
         SW_btn.title = "刪除預約"
         SE_btn.title = "查詢預約"
@@ -274,8 +274,8 @@ class CRUDContentView(ContentView):
             btn.background_color = "light blue"
             self.add_subview(btn)
 
-    def create_arrangement_content(self, sender):
-        self.parent_section.create_arrangement_content()
+    def create_create_arrangement_content(self, sender):
+        self.parent_section.create_create_arrangement_content()
 
 
 class CRUDSectionView(SectionView):
@@ -304,9 +304,9 @@ class CRUDSectionView(SectionView):
         self.parent_section.go_to_date(date)
         self.parent_section.handled_date(date)
 
-    def create_arrangement_content(self):
+    def create_create_arrangement_content(self):
         self.remove_subview(self.content)
-        self.parent_section.create_arrangement_content()
+        self.parent_section.create_create_arrangement_content()
 
     def re_crud(self):
         self.remove_subview(self.content)
@@ -540,8 +540,8 @@ class BelowSectionView(SectionView):
             date[0], date[1], date[2])
         self.parent_section.re_crud()
 
-    def create_arrangement_content(self):
-        self.parent_section.create_arrangement_content()
+    def create_create_arrangement_content(self):
+        self.parent_section.create_create_arrangement_content()
 
     def re_crud(self):
         self.parent_section.re_crud()
@@ -589,8 +589,8 @@ class MainSectionView(SectionView):
     def re_crud(self):
         self.parent_section.re_crud()
 
-    def create_arrangement_content(self):
-        self.parent_section.create_arrangement_content()
+    def create_create_arrangement_content(self):
+        self.parent_section.create_create_arrangement_content()
 
 
 # endregion
@@ -609,7 +609,8 @@ class ViewFactory:
         "crud section": CRUDSectionView,
         "crud content": CRUDContentView,
         "calendar content": CalendarContentView,
-        "calandar header content": CalendarHeaderContentView
+        "calandar header content": CalendarHeaderContentView,
+        "create arrangement content": CreateArrangementContentView
     }
 
     @staticmethod
@@ -631,6 +632,7 @@ class Program:
         self.date = (dt.datetime.now().year,
                      dt.datetime.now().month, dt.datetime.now().day)
         self.view_id_dict = {}
+        self.create_arrangement_content = None
     # region ui functions
 
     def entry_screen(self, main_section: SectionView, year, month, day):
@@ -737,7 +739,9 @@ class Program:
 
     def crud_to_date_picker(self):
         crud_section = self.view_id_dict["0-2-2"]
-        self.remove_all_view(crud_section)
+        # self.remove_all_view(crud_section)
+        for subview in crud_section.subviews:
+            subview.hidden = True
         datepicker = JumpToDateContentView("0-2-2-2", crud_section)
         self.register_view(datepicker)
         crud_section.content = datepicker
@@ -786,13 +790,23 @@ class Program:
         except Exception as e:
             return Err(str(e))
 
-    def create_arrangement_content(self):
+    def create_create_arrangement_content(self):
         crud_section = self.view_id_dict["0-2-2"]
-        create_arrangement_content = CreateArrangementContentView(
-            "0-2-2-3", crud_section, date=self.date)
-        self.register_view(create_arrangement_content)
-        crud_section.content = create_arrangement_content
-        crud_section.set_content()
+        if not self.create_arrangement_content:
+            create_arrangement_content_res = ViewFactory().produce_product(
+                "create arrangement content", "0-2-2-3", crud_section, date=self.date)
+            if create_arrangement_content_res.is_ok():
+                self.create_arrangement_content = create_arrangement_content_res.val
+                self.register_view(self.create_arrangement_content)
+                crud_section.content = self.create_arrangement_content
+                crud_section.set_content()
+            else:
+                print(
+                    f'create arrangement ui gone wrong: {create_arrangement_content_res.err}')
+        else:
+            self.create_arrangement_content.hidden = False
+            crud_section.content = self.create_arrangement_content
+            crud_section.set_content()
     # endregion
 
     def remove_all_view(self, section: View):
