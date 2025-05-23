@@ -123,10 +123,11 @@ class CalendarContentView(ContentView):
 
 # endregion
 
-# region CRUD
+# region CRUD page
 class CreateArrangementContentView(ContentView):
-    def __init__(self, view_id, parent_section=None, x=0, y=0):
+    def __init__(self, view_id, parent_section=None, x=0, y=0, date=None):
         super().__init__(view_id, parent_section, x, y)
+        self.date = date
         self.show_content()
 
     def show_content(self):
@@ -134,17 +135,29 @@ class CreateArrangementContentView(ContentView):
             return
         self.frame = (self.x, self.y, self.parent_section.width,
                       self.parent_section.height)
-        btn_width, btn_height, btn_margin = 100, 50, 25
-        confirm_btm = Button()
-        confirm_btm.title = "送出"
-        confirm_btm.border_width = 1
-        confirm_btm.frame = (self.parent_section.width-btn_width-btn_margin,
-                             self.parent_section.height-btn_height-btn_margin, btn_width, btn_height)
-        confirm_btm.action = self.re_crud
-        self.add_subview(confirm_btm)
+        create_arrangement_ui = load_view("create_arrangement_ui.pyui")
+        if create_arrangement_ui:
+            print(True)
+            print(self.date)
+        self.year_filed = create_arrangement_ui["year_text"]
+        self.year_filed.text = str(
+            self.date[0]-1911)
+        self.month_field = create_arrangement_ui["month_text"]
+        self.month_field.text = str(
+            self.date[1])
+        self.day_field = create_arrangement_ui["day_text"]
+        self.day_field.text = str(
+            self.date[2])
+        create_arrangement_ui["send_btn"].action = self.re_crud
+        self.add_subview(create_arrangement_ui)
 
     def re_crud(self, sender):
         self.parent_section.re_crud()
+
+    def handled_date(self, date: tuple[int, int, int]):
+        self.year_filed.text = str(date[0]-1911)
+        self.month_field.text = str(date[1])
+        self.day_field.text = str(date[2])
 
 
 class ReadArrangementContentView(ContentView):
@@ -618,7 +631,8 @@ class ViewFactory:
 class Program:
 
     def __init__(self):
-        self.calender_date = None
+        self.date = (dt.datetime.now().year,
+                     dt.datetime.now().month, dt.datetime.now().day)
         self.view_id_dict = {}
 
     def entry_screen(self, main_section: SectionView, year, month, day):
@@ -741,7 +755,12 @@ class Program:
 
     def change_month_and_go_to_date(self, year, month,
                                     date) -> Result[tuple[int, int, int], str]:
+
         try:
+            create_arrangement_ui = self.view_id_dict.get("0-2-2-3", None)
+            if create_arrangement_ui:
+                create_arrangement_ui.handled_date((year, month, date))
+            self.date = (year, month, date)
             calendar = self.view_id_dict["0-1-2"]
             calendar.year, calendar.month, calendar.day = year, month, date
             calendar.show_content()
@@ -751,12 +770,17 @@ class Program:
 
     def handle_date(self, year, month,
                     date) -> Result[tuple[int, int, int], str]:
-        handled_date = (year, month, date)
+        self.date = (year, month, date)
+
         below_section = self.view_id_dict["0-2"]
         main_section = self.view_id_dict["0"]
+        create_arrangement_ui = self.view_id_dict.get("0-2-2-3", None)
         try:
-            main_section.handled_date = handled_date
-            below_section.handled_date(handled_date)
+            if create_arrangement_ui:
+                create_arrangement_ui.handled_date(self.date)
+            main_section.handled_date = self.date
+            below_section.handled_date(self.date)
+
             return Ok((year, month, int(date)))
         except Exception as e:
             return Err(str(e))
@@ -764,7 +788,7 @@ class Program:
     def create_arrangement_content(self):
         crud_section = self.view_id_dict["0-2-2"]
         create_arrangement_content = CreateArrangementContentView(
-            "0-2-2-3", crud_section)
+            "0-2-2-3", crud_section, date=self.date)
         self.register_view(create_arrangement_content)
         crud_section.content = create_arrangement_content
         crud_section.set_content()
