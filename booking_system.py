@@ -136,9 +136,6 @@ class CreateArrangementContentView(ContentView):
         self.frame = (self.x, self.y, self.parent_section.width,
                       self.parent_section.height)
         create_arrangement_ui = load_view("create_arrangement_ui.pyui")
-        if create_arrangement_ui:
-            print(True)
-            print(self.date)
         self.year_filed = create_arrangement_ui["year_text"]
         self.year_filed.text = str(
             self.date[0]-1911)
