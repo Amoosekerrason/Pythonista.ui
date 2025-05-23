@@ -123,7 +123,7 @@ class CalendarContentView(ContentView):
 
 # endregion
 
-# region CRUD page
+# region CRUD ui
 class CreateArrangementContentView(ContentView):
     def __init__(self, view_id, parent_section=None, x=0, y=0, date=None):
         super().__init__(view_id, parent_section, x, y)
@@ -634,6 +634,7 @@ class Program:
         self.date = (dt.datetime.now().year,
                      dt.datetime.now().month, dt.datetime.now().day)
         self.view_id_dict = {}
+    # region ui functions
 
     def entry_screen(self, main_section: SectionView, year, month, day):
         top_section_res = ViewFactory.produce_product(
@@ -745,6 +746,9 @@ class Program:
         crud_section.content = datepicker
         crud_section.set_content()
         # datepicker.present("sheet")
+    # endregion
+
+    # region callback functions
 
     def re_crud(self):
         crud_section = self.view_id_dict["0-2-2"]
@@ -792,6 +796,7 @@ class Program:
         self.register_view(create_arrangement_content)
         crud_section.content = create_arrangement_content
         crud_section.set_content()
+    # endregion
 
     def remove_all_view(self, section: View):
         for view in section.subviews:
