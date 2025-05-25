@@ -1,5 +1,9 @@
+try:
+    from ui import *  # type: ignore
+except ImportError:
+    from ui_stub import *  # type: ignore
 from abc import ABC, abstractmethod
-from ui_stub import *  # type: ignore
+
 from typing import Optional, Dict, Any
 import sqlite3 as sql
 
