@@ -10,10 +10,21 @@ class SQL3DBqueue(DBQueue):
         return sql_str
 
     def insert(self, table, columns, values):
-        return super().insert(table, columns, values)
+        cols_str = ",".join(columns)
+        values_str = ",".join(values)
+        sql_str = f"INSERT INTO {table} ({cols_str} VALUES ({values_str}));"
+        return sql_str
 
     def update(self, table, set_values, where=None):
-        return super().update(table, set_values, where)
+        set_values_list = []
+        for key, val in set_values.items():
+            set_values_list.append(f"{key} = {val}")
+        set_values_str = ",".join(set_values_list)
+        if where:
+            sql_str = f"UPDATE {table} SET {set_values_str} WHERE {where}"
+        else:
+            sql_str = f"UPDATE {table} SET {set_values_str}"
+        return sql_str
 
     def delete(self, table, where=None):
         return super().delete(table, where)
@@ -25,6 +36,9 @@ class SQL3DBqueue(DBQueue):
 class SQL3DBHelper(DBHelper):
     def __init__(self, db_path):
         super().__init__(db_path)
+
+    def create_table(self, queue):
+        return super().create_table(queue)
 
     def insert_data(self, queue):
         return super().insert_data(queue)

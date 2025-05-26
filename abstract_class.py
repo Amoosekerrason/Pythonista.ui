@@ -35,7 +35,9 @@ class SectionView(ABC, View):
 class DBQueue(ABC):
 
     @abstractmethod
-    def create(self, table: str, columns: list[tuple[str, str, str]]):
+    def create(
+        self, table: str, columns: list[tuple[str, str, str]]
+    ):  # columns type mean:(col_name,col_type,col_condition)
         pass
 
     @abstractmethod
@@ -43,11 +45,18 @@ class DBQueue(ABC):
         pass
 
     @abstractmethod
-    def select(self, table: str, columns: list[str], where: Optional[Dict[str, Any]] = None):
+    def select(
+        self, table: str, columns: list[str], where: Optional[Dict[str, Any]] = None
+    ):
         pass
 
     @abstractmethod
-    def update(self, table: str, set_values: Dict[str, Any], where: Optional[Dict[str, Any]] = None):
+    def update(
+        self,
+        table: str,
+        set_values: Dict[str, Any],
+        where: Optional[Dict[str, Any]] = None,
+    ):
         pass
 
     @abstractmethod
@@ -58,6 +67,10 @@ class DBQueue(ABC):
 class DBHelper(ABC):
     def __init__(self, db_path):
         self.conn = sql.connect(db_path)
+
+    @abstractmethod
+    def create_table(self, queue: DBQueue):
+        pass
 
     @abstractmethod
     def insert_data(self, queue: DBQueue):
