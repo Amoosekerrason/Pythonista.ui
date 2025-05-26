@@ -1,36 +1,58 @@
 import sqlite3 as sql
 from abstract_class import DBHelper, DBQueue
-import os
 
 
 class SQL3DBqueue(DBQueue):
     def create(self, table, columns):
-        cols_str = ",".join(f" ".join(col) for col in columns)
-        sql_str = f"CREATE TABLE IF NOT EXISTS {table} ({cols_str});"
-        return sql_str
+        cols_str = ", ".join(f" ".join(col) for col in columns)
+        return f"CREATE TABLE IF NOT EXISTS {table} ({cols_str});"
 
     def insert(self, table, columns, values):
-        cols_str = ",".join(columns)
-        values_str = ",".join(values)
-        sql_str = f"INSERT INTO {table} ({cols_str} VALUES ({values_str}));"
-        return sql_str
-
-    def update(self, table, set_values, where=None):
-        set_values_list = []
-        for key, val in set_values.items():
-            set_values_list.append(f"{key} = {val}")
-        set_values_str = ",".join(set_values_list)
-        if where:
-            sql_str = f"UPDATE {table} SET {set_values_str} WHERE {where}"
-        else:
-            sql_str = f"UPDATE {table} SET {set_values_str}"
-        return sql_str
-
-    def delete(self, table, where=None):
-        return super().delete(table, where)
+        cols_str = ", ".join(columns)
+        placeholder = ", ".join(["?"]*len(values))
+        sql_str = f"INSERT INTO {table} ({cols_str} VALUES ({placeholder}));"
+        return sql_str, values
 
     def select(self, table, columns, where=None):
-        return super().select(table, columns, where)
+        cols_str = ", ".join(columns)
+        sql_str = f"SELECT {cols_str} FROM {table};"
+        params = []
+        if where:
+            where_clauses = []
+            for key, value in where.items():
+                where_clauses.append(f"{key} = ?")
+                params.append(value)
+            where_str = " AND ".join(where_clauses)
+            sql_str += f" WHERE {where_str}"
+        return sql_str, params
+
+    def update(self, table, set_values, where=None):
+        set_clauses = [f"{col} = ?" for col in set_values]
+        set_values_list = list(set_values.values())
+
+        sql_str = f"UPDATE {table} SET {', '.join(set_clauses)}"
+
+        params = set_values_list
+
+        if where:
+            where_clauses = [f"{col} = ?" for col in where]
+            where_values = list(where.values())
+            sql_str += f" WHERE {' AND '.join(where_clauses)}"
+            params.extend(where_values)
+
+        return sql_str, params
+
+    def delete(self, table, where=None):
+        sql_str = f"DELETE FROM {table}"
+        params = []
+
+        if where:
+            where_clauses = [f"{col} = ?" for col in where]
+            where_values = list(where.values())
+            sql_str += f" WHERE {' AND '.join(where_clauses)}"
+            params.extend(where_values)
+
+        return sql_str, params
 
 
 class SQL3DBHelper(DBHelper):
