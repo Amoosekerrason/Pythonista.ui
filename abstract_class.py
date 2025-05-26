@@ -35,7 +35,7 @@ class SectionView(ABC, View):
 class DBQueue(ABC):
 
     @abstractmethod
-    def create(self, table_name: str, columns: list[tuple[str, str]]):
+    def create(self, table: str, columns: list[tuple[str, str, str]]):
         pass
 
     @abstractmethod
@@ -60,9 +60,17 @@ class DBHelper(ABC):
         self.conn = sql.connect(db_path)
 
     @abstractmethod
-    def load_data(self, queue: DBQueue):
+    def insert_data(self, queue: DBQueue):
         pass
 
     @abstractmethod
-    def write_data(self, queue: DBQueue):
+    def select_data(self, queue: DBQueue):
+        pass
+
+    @abstractmethod
+    def update_data(self, queue: DBQueue):
+        pass
+
+    @abstractmethod
+    def delete_data(self, queue: DBQueue):
         pass

@@ -4,8 +4,10 @@ import os
 
 
 class SQL3DBqueue(DBQueue):
-    def create(self, table_name, columns):
-        return super().create(table_name, columns)
+    def create(self, table, columns):
+        cols_str = ",".join(f" ".join(col) for col in columns)
+        sql_str = f"CREATE TABLE IF NOT EXISTS {table} ({cols_str});"
+        return sql_str
 
     def insert(self, table, columns, values):
         return super().insert(table, columns, values)
@@ -24,8 +26,14 @@ class SQL3DBHelper(DBHelper):
     def __init__(self, db_path):
         super().__init__(db_path)
 
-    def load_data(self):
-        return super().load_data()
+    def insert_data(self, queue):
+        return super().insert_data(queue)
 
-    def write_data(self):
-        return super().write_data()
+    def select_data(self, queue):
+        return super().select_data(queue)
+
+    def update_data(self, queue):
+        return super().upload_data(queue)
+
+    def delete_data(self, queue):
+        return super().delete_data(queue)
