@@ -11,7 +11,7 @@ class SQL3DBqueue(DBQueue):
     def insert(self, table, columns, values):
         cols_str = ", ".join(columns)
         placeholder = ", ".join(["?"]*len(values))
-        sql_str = f"INSERT INTO {table} ({cols_str} VALUES ({placeholder}));"
+        sql_str = f"INSERT INTO {table} ({cols_str}) VALUES ({placeholder}));"
         return sql_str, values
 
     def select(self, table, columns, where=None):
@@ -61,7 +61,20 @@ class SQL3DBHelper(DBHelper):
         super().__init__(db_path)
 
     def create_table(self, queue):
-        return super().create_table(queue)
+        cur = self.conn.cursor()
+        cur.execute(queue.create("arrangements info", [
+                    ("id", "INT", "PRIMARY KEY NOT NULL AUTOINCREMENT"),
+                    ("name", "TEXT", "NOT NULL"),
+                    ("gender", "TEXT"),
+                    ("seats", "INT"),
+                    ("tables", "TEXT", "NOT NULL"),
+                    ("phoneNumber", "TEXT", "NOT NULL"),
+                    ("when", "TIMESTAMP", "NOT NULL"),
+                    ("isSpecify", "INT"),
+                    ("shoesOff", "INT"),
+                    ("eventTime", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"),
+                    ("representative", "TEXT")
+                    ]))
 
     def insert_data(self, queue):
         return super().insert_data(queue)
@@ -70,7 +83,7 @@ class SQL3DBHelper(DBHelper):
         return super().select_data(queue)
 
     def update_data(self, queue):
-        return super().upload_data(queue)
+        return super().update_data(queue)
 
     def delete_data(self, queue):
         return super().delete_data(queue)
