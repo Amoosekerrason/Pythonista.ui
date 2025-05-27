@@ -4,6 +4,7 @@ from abstract_class import DBHelper, DBQueue
 
 class SQL3DBqueue(DBQueue):
     def create(self, table, columns):
+        # columns type mean:(col_name,col_type,col_conditions)
         cols_str = ", ".join(f" ".join(col) for col in columns)
         return f"CREATE TABLE IF NOT EXISTS {table} ({cols_str});"
 
