@@ -73,7 +73,7 @@ class SQL3DBHelper(DBHelper):
                     ("isSpecify", "INT"),
                     ("shoesOff", "INT"),
                     ("eventTime", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"),
-                    ("representative", "TEXT")
+                    ("contacter", "TEXT")
                     ]))
 
     def insert_data(self, queue):
