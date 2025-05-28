@@ -55,7 +55,7 @@ class DBQueue(ABC):
         self,
         table: str,
         set_values: Dict[str, Any],
-        where: Optional[Dict[str, Any]] = None,
+        where: Optional[Dict[str, Any]] = None
     ):
         pass
 
@@ -65,25 +65,28 @@ class DBQueue(ABC):
 
 
 class DBHelper(ABC):
-    def __init__(self, db_path):
+    def __init__(self, db_path: str, db_queue: DBQueue):
         self.conn = sql.connect(db_path)
+        self.queue = db_queue
 
     @abstractmethod
-    def create_table(self, queue: DBQueue):
+    def create_table(self):
         pass
 
     @abstractmethod
-    def insert_data(self, queue: DBQueue):
+    def insert_data(self, table: str, columns: list[str], values: list[Any]):
         pass
 
     @abstractmethod
-    def select_data(self, queue: DBQueue):
+    def select_data(self, table: str, columns: list[str], where: Optional[Dict[str, Any]] = None):
         pass
 
     @abstractmethod
-    def update_data(self, queue: DBQueue):
+    def update_data(self, table: str,
+                    set_values: Dict[str, Any],
+                    where: Optional[Dict[str, Any]] = None):
         pass
 
     @abstractmethod
-    def delete_data(self, queue: DBQueue):
+    def delete_data(self, table: str, where: Optional[Dict[str, Any]] = None):
         pass

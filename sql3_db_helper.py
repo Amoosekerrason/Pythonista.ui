@@ -57,45 +57,53 @@ class SQL3DBqueue(DBQueue):
 
 
 class SQL3DBHelper(DBHelper):
-    def __init__(self, db_path):
-        super().__init__(db_path)
+    def __init__(self, db_path, db_queue):
+        super().__init__(db_path, db_queue)
 
-    def create_table(self, queue):
+    def create_table(self):
         cur = self.conn.cursor()
         cur.execute(
-            queue.create(
-                "arrangements info",
-                [
-                    ("id", "INTERGER", "PRIMARY KEY NOT NULL AUTOINCREMENT"),
-                    ("name", "TEXT", "NOT NULL"),
-                    ("gender", "TEXT"),
-                    ("seats", "INTERGER"),
-                    ("tables", "TEXT", "NOT NULL"),
-                    ("phoneNumber", "TEXT", "NOT NULL"),
-                    ("when", "TIMESTAMP", "NOT NULL"),
-                    ("isSpecify", "INTERGER"),
-                    ("shoesOff", "INTERGER"),
-                    ("eventTime", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"),
-                    ("contacter", "TEXT")
-                ])),
+            self.queue.create("arrangements_info", [
+                ("id", "INTEGER", "PRIMARY KEY AUTOINCREMENT"),
+                ("name", "TEXT", "NOT NULL"),
+                ("gender", "TEXT"),
+                ("seats", "INTEGER"),
+                ("tables", "TEXT", "NOT NULL"),
+                ("phoneNumber", "TEXT", "NOT NULL"),
+                ("arrangementTime", "TIMESTAMP", "NOT NULL"),
+                ("isSpecify", "INTEGER"),
+                ("shoesOff", "INTEGER"),
+                ("eventTime", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"),
+                ("contacter", "TEXT")
+            ]
+            )
+        )
+
         cur.execute(
-            queue.create(
-                "employee info",
-                [("id", "INTERGER", "UNIQUE NOT NULL"),
-                 ("name", "TEXT", "NOT NULL")],
+            self.queue.create("employee_info", [
+                ("id", "INTEGER", "UNIQUE NOT NULL"),
+                ("name", "TEXT", "NOT NULL")
+            ],
             )
         )
         self.conn.commit()
         cur.close()
 
-    def insert_data(self, queue):
-        return super().insert_data(queue)
+    def insert_data(self, table, columns, values):
+        return super().insert_data(table, columns, values)
 
-    def select_data(self, queue):
-        return super().select_data(queue)
+    def update_data(self, table, set_values, where=None):
+        return super().update_data(table, set_values, where)
 
-    def update_data(self, queue):
-        return super().update_data(queue)
+    def delete_data(self, table, where=None):
+        return super().delete_data(table, where)
 
-    def delete_data(self, queue):
-        return super().delete_data(queue)
+
+def main():
+    queue = SQL3DBqueue()
+    db = SQL3DBHelper('database.db', queue)
+    db.create_table()
+
+
+if __name__ == '__main__':
+    main()

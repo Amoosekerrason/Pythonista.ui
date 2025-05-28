@@ -7,6 +7,7 @@ import datetime as dt
 import calendar as cl
 from result import *
 from abstract_class import *
+from sql3_db_helper import *
 
 # endregion
 
@@ -118,7 +119,8 @@ class CalendarContentView(ContentView):
         self.previous_selected_btn = sender
         self.selected_btn = sender
         if self.parent_section:
-            self.parent_section.handle_date(self.year, self.month, int(sender.title))
+            self.parent_section.handle_date(
+                self.year, self.month, int(sender.title))
 
 
 # endregion
@@ -369,7 +371,8 @@ class SelectMonthContentView(ContentView):
             btn_y = (self.parent_section.height - btn_height) / 2
 
             last_btn.frame = (left_btn_x, btn_y, side_btn_width, btn_height)
-            middle_btn.frame = (middle_btn_x, btn_y, middle_btn_width, btn_height)
+            middle_btn.frame = (middle_btn_x, btn_y,
+                                middle_btn_width, btn_height)
             next_btn.frame = (right_btn_x, btn_y, side_btn_width, btn_height)
 
             last_btn.title = "上月"
@@ -555,7 +558,8 @@ class BelowSectionView(SectionView):
         self.parent_section.crud_to_date_picker()
 
     def go_to_date(self, date: tuple[int, int, int]):
-        self.parent_section.change_month_and_go_to_date(date[0], date[1], date[2])
+        self.parent_section.change_month_and_go_to_date(
+            date[0], date[1], date[2])
         self.parent_section.re_crud()
 
     def create_create_arrangement_content(self):
@@ -643,7 +647,8 @@ class ViewFactory:
 
 class Program:
 
-    def __init__(self):
+    def __init__(self, dbhelper: DBHelper):
+        self.dbhelper = dbhelper
         self.date = (
             dt.datetime.now().year,
             dt.datetime.now().month,
@@ -655,24 +660,24 @@ class Program:
     # region ui functions
 
     def entry_screen(self, main_section: SectionView, year, month, day):
-        top_section_res = ViewFactory.produce_product("top", "0-1", main_section)
+        top_section_res = ViewFactory.produce_product(
+            "top", "0-1", main_section)
         if top_section_res.is_ok():
             self.top_section = top_section_res.val
             self.top_section.x = 0
             self.top_section.y = 0
             self.register_view(self.top_section)
-            below_section_res = ViewFactory.produce_product(
-                "below", "0-2", main_section
-            )
+            below_section_res = ViewFactory.produce_product("below", "0-2",
+                                                            main_section)
             if below_section_res.is_ok():
                 self.below_section = below_section_res.val
                 self.below_section.x = 0
                 self.below_section.y = self.top_section.height
                 self.register_view(self.below_section)
-                top_content = self.show_calendar(year, month, day, self.top_section)
-                below_content = self.show_interface(
-                    year, month, day, self.below_section
-                )
+                top_content = self.show_calendar(
+                    year, month, day, self.top_section)
+                below_content = self.show_interface(year, month, day,
+                                                    self.below_section)
                 main_section.top_section = top_content
                 main_section.below_section = below_content
                 main_section.set_content()
@@ -681,14 +686,19 @@ class Program:
         else:
             print(f"top building goes wrong: {top_section_res.err}")
 
-    def show_calendar(
-        self, year, month, day, section: SectionView = None
-    ) -> SectionView:
+    def show_calendar(self,
+                      year,
+                      month,
+                      day,
+                      section: SectionView = None) -> SectionView:
 
-        header_view = CalendarHeaderContentView("0-1-1", parent_section=section)
-        body_view = CalendarContentView(
-            "0-1-2", parent_section=section, year=year, month=month, day=day
-        )
+        header_view = CalendarHeaderContentView(
+            "0-1-1", parent_section=section)
+        body_view = CalendarContentView("0-1-2",
+                                        parent_section=section,
+                                        year=year,
+                                        month=month,
+                                        day=day)
 
         self.register_view(header_view)
 
@@ -700,10 +710,13 @@ class Program:
         section.add_subview(section.body_content)
         return section
 
-    def show_interface(
-        self, year, month, day, section: SectionView = None
-    ) -> SectionView:
-        select_month_section = self.get_select_month_section(year, month, day, section)
+    def show_interface(self,
+                       year,
+                       month,
+                       day,
+                       section: SectionView = None) -> SectionView:
+        select_month_section = self.get_select_month_section(
+            year, month, day, section)
 
         crud_section = self.get_crud_section()
         try:
@@ -712,9 +725,14 @@ class Program:
             section.set_content()
             return section
         except Exception as e:
-            raise Exception(f"this section doesn't have interface section list") from e
+            raise Exception(
+                f"this section doesn't have interface section list") from e
 
-    def get_select_month_section(self, year, month, day, section: SectionView = None):
+    def get_select_month_section(self,
+                                 year,
+                                 month,
+                                 day,
+                                 section: SectionView = None):
         select_month_section = SelectMonthSectionView(
             "0-2-1",
             section,
@@ -722,7 +740,8 @@ class Program:
             month,
             day,
         )
-        select_month_btns = SelectMonthContentView("0-2-1-1", select_month_section)
+        select_month_btns = SelectMonthContentView(
+            "0-2-1-1", select_month_section)
         self.register_view(select_month_section)
         self.register_view(select_month_btns)
 
@@ -764,9 +783,8 @@ class Program:
         crud_section.content = crud_content
         crud_section.set_content()
 
-    def change_month_and_go_to_date(
-        self, year, month, date
-    ) -> Result[tuple[int, int, int], str]:
+    def change_month_and_go_to_date(self, year, month,
+                                    date) -> Result[tuple[int, int, int], str]:
 
         try:
             create_arrangement_ui = self.view_id_dict.get("0-2-2-3", None)
@@ -780,7 +798,8 @@ class Program:
         except Exception as e:
             return Err(str(e))
 
-    def handle_date(self, year, month, date) -> Result[tuple[int, int, int], str]:
+    def handle_date(self, year, month,
+                    date) -> Result[tuple[int, int, int], str]:
         self.date = (year, month, date)
 
         below_section = self.view_id_dict["0-2"]
@@ -800,8 +819,7 @@ class Program:
         crud_section = self.view_id_dict["0-2-2"]
         if not self.create_arrangement_content:
             create_arrangement_content_res = ViewFactory.produce_product(
-                "create arrangement content", "0-2-2-3", crud_section, date=self.date
-            )
+                "create arrangement content", "0-2-2-3", crud_section, date=self.date)
             if create_arrangement_content_res.is_ok():
                 self.create_arrangement_content = create_arrangement_content_res.val
                 self.register_view(self.create_arrangement_content)
@@ -834,8 +852,9 @@ class Program:
 
     @staticmethod
     def main():
-
-        program = Program()
+        dbqueue = SQL3DBqueue()
+        dbhelper = SQL3DBHelper("database.db", dbqueue)
+        program = Program(dbhelper)
         with open("view_id.txt", "w") as f:
             f.write("View ID Registry:\n")
         main_section_res = ViewFactory.produce_product("main", "0", program)
@@ -866,4 +885,4 @@ if __name__ == "__main__":
     TOP_SECTION_RATIO = 4 / 7
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
     COLOR_TOGGLE = False
-    Program().main()
+    Program.main()
