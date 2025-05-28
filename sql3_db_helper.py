@@ -10,7 +10,7 @@ class SQL3DBqueue(DBQueue):
 
     def insert(self, table, columns, values):
         cols_str = ", ".join(columns)
-        placeholder = ", ".join(["?"]*len(values))
+        placeholder = ", ".join(["?"] * len(values))
         sql_str = f"INSERT INTO {table} ({cols_str}) VALUES ({placeholder}));"
         return sql_str, values
 
@@ -62,19 +62,34 @@ class SQL3DBHelper(DBHelper):
 
     def create_table(self, queue):
         cur = self.conn.cursor()
-        cur.execute(queue.create("arrangements info", [
-                    ("id", "INT", "PRIMARY KEY NOT NULL AUTOINCREMENT"),
+        cur.execute(
+            queue.create(
+                "arrangements info",
+                [
+                    ("id", "INTERGER", "PRIMARY KEY NOT NULL AUTOINCREMENT"),
                     ("name", "TEXT", "NOT NULL"),
                     ("gender", "TEXT"),
-                    ("seats", "INT"),
+                    ("seats", "INTERGER"),
                     ("tables", "TEXT", "NOT NULL"),
                     ("phoneNumber", "TEXT", "NOT NULL"),
                     ("when", "TIMESTAMP", "NOT NULL"),
-                    ("isSpecify", "INT"),
-                    ("shoesOff", "INT"),
+                    ("isSpecify", "INTERGER"),
+                    ("shoesOff", "INTERGER"),
                     ("eventTime", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"),
                     ("contacter", "TEXT")
                     ]))
+                    ("representative", "TEXT"),
+                ],
+            )
+        )
+        cur.execute(
+            queue.create(
+                "employee info",
+                [("id", "INTERGER", "UNIQUE NOT NULL"), ("name", "TEXT", "NOT NULL")],
+            )
+        )
+        self.conn.commit()
+        cur.close()
 
     def insert_data(self, queue):
         return super().insert_data(queue)
