@@ -8,14 +8,7 @@ import calendar as cl
 from result import *
 from abstract_class import *
 from sql3_db_helper import *
-import logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename="booking.log",
-    filemode="w"
-)
-logger = logging.getLogger(__name__)
+from logging_config import logger
 # endregion
 
 # region Calandar
