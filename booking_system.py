@@ -8,7 +8,8 @@ import calendar as cl
 from result import *
 from abstract_class import *
 from sql3_db_helper import *
-
+import logging
+logger = logging.getLogger(__name__)
 # endregion
 
 # region Calandar
@@ -539,11 +540,7 @@ class BelowSectionView(SectionView):
 
     def handle_date(self, year, month, day):
         if self.parent_section:
-            res = self.parent_section.handle_date(year, month, day)
-            if res.is_ok():
-                print("Success", res.val)
-            else:
-                print("Failed", res.err)
+            self.parent_section.handle_date(year, month, day)
 
     def change_month_and_go_to_date(self, year, month, date):
         if self.parent_section:
@@ -682,9 +679,9 @@ class Program:
                 main_section.below_section = below_content
                 main_section.set_content()
             else:
-                print(f"below building goes wrong: {below_section_res.err}")
+                logger.error(below_section_res.err)
         else:
-            print(f"top building goes wrong: {top_section_res.err}")
+            logger.error(top_section_res.err)
 
     def show_calendar(self,
                       year,
@@ -826,9 +823,7 @@ class Program:
                 crud_section.content = self.create_arrangement_content
                 crud_section.set_content()
             else:
-                print(
-                    f"create arrangement ui gone wrong: {create_arrangement_content_res.err}"
-                )
+                logger.error(create_arrangement_content_res.err)
         else:
             self.create_arrangement_content.hidden = False
             crud_section.content = self.create_arrangement_content
@@ -852,6 +847,8 @@ class Program:
 
     @staticmethod
     def main():
+        logging.basicConfig(filename="booking.log", level=logging.DEBUG)
+        logger.info("start running")
         dbqueue = SQL3DBqueue()
         dbhelper = SQL3DBHelper("database.db", dbqueue)
         program = Program(dbhelper)
@@ -867,8 +864,9 @@ class Program:
                 dt.datetime.now().month,
                 dt.datetime.now().day,
             )
+
         else:
-            print(f"main section building goes wrong: {main_section_res.err}")
+            logger.error(main_section_res.err)
         # main_section = MainSectionView("0", program)
         # with open("view_id.txt", "w") as f:
         #     for i in sorted(

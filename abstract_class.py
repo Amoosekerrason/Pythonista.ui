@@ -41,13 +41,12 @@ class DBQueue(ABC):
         pass
 
     @abstractmethod
-    def insert(self, table: str, columns: list[str], values: list[Any]):
+    def insert(self, table: str, columns: list[str], values: list[Any]) -> tuple[str, list[Any]]:
         pass
 
     @abstractmethod
     def select(
-        self, table: str, columns: list[str], where: Optional[Dict[str, Any]] = None
-    ):
+            self, table: str, columns: list[str], where: Optional[Dict[str, Any]] = None, orderby: Optional[str | list] = None) -> tuple[str, list]:
         pass
 
     @abstractmethod
@@ -56,11 +55,11 @@ class DBQueue(ABC):
         table: str,
         set_values: Dict[str, Any],
         where: Optional[Dict[str, Any]] = None
-    ):
+    ) -> tuple[str, list[Any]]:
         pass
 
     @abstractmethod
-    def delete(self, table: str, where: Optional[Dict[str, Any]] = None):
+    def delete(self, table: str, where: Optional[Dict[str, Any]] = None) -> tuple[str, list]:
         pass
 
 
