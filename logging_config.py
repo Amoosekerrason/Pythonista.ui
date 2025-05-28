@@ -10,4 +10,5 @@ console.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
     '%(asctime)s [%(levelname)s] %(name)s: %(message)s')
 console.setFormatter(formatter)
-logger = logging.getLogger(__name__).addHandler(console)
+logging.getLogger('').addHandler(console)
+logger = logging.getLogger(__name__)
