@@ -77,15 +77,12 @@ class SQL3DBHelper(DBHelper):
                     ("shoesOff", "INTERGER"),
                     ("eventTime", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"),
                     ("contacter", "TEXT")
-                    ]))
-                    ("representative", "TEXT"),
-                ],
-            )
-        )
+                ])),
         cur.execute(
             queue.create(
                 "employee info",
-                [("id", "INTERGER", "UNIQUE NOT NULL"), ("name", "TEXT", "NOT NULL")],
+                [("id", "INTERGER", "UNIQUE NOT NULL"),
+                 ("name", "TEXT", "NOT NULL")],
             )
         )
         self.conn.commit()
