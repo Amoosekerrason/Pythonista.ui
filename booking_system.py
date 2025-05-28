@@ -9,6 +9,12 @@ from result import *
 from abstract_class import *
 from sql3_db_helper import *
 import logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    filename="booking.log",
+    filemode="w"
+)
 logger = logging.getLogger(__name__)
 # endregion
 
@@ -847,7 +853,6 @@ class Program:
 
     @staticmethod
     def main():
-        logging.basicConfig(filename="booking.log", level=logging.DEBUG)
         logger.info("start running")
         dbqueue = SQL3DBqueue()
         dbhelper = SQL3DBHelper("database.db", dbqueue)
