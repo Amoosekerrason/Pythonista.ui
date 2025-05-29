@@ -18,8 +18,10 @@ import logging
 
 class CalendarHeaderContentView(ContentView):
 
-    def __init__(self, view_id, parent_section):
-        super().__init__(view_id, parent_section)
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+    # def __init__(self, view_id, parent_section):
+    #     super().__init__(view_id, parent_section)
         if COLOR_TOGGLE:
             self.background_color = "yellow"
         self.show_content()
@@ -46,16 +48,18 @@ class CalendarHeaderContentView(ContentView):
 
 class CalendarContentView(ContentView):
 
-    def __init__(
-        self,
-        view_id,
-        parent_section,
-        year=None,
-        month=None,
-        day=None,
-    ):
-        super().__init__(view_id, parent_section)
-        self.parent_section = parent_section
+    def __init__(self, view_id, parent_section=None, x=0, y=0, year=None, month=None, day=None):
+        super().__init__(view_id, parent_section, x, y)
+    # def __init__(
+    #     self,
+    #     view_id,
+    #     parent_section,
+    #     year=None,
+    #     month=None,
+    #     day=None,
+    # ):
+    #     super().__init__(view_id, parent_section)
+    #     self.parent_section = parent_section
         if COLOR_TOGGLE:
             self.background_color = "pink"
         self.year, self.month, self.day = year, month, day
@@ -209,9 +213,10 @@ class DeleteArrangementContentView(ContentView):
 
 
 class JumpToDateContentView(ContentView):
-
-    def __init__(self, view_id, parent_section, x=0, y=0):
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
+    # def __init__(self, view_id, parent_section, x=0, y=0):
+    #     super().__init__(view_id, parent_section, x, y)
         self.show_content()
 
     def show_content(self):
@@ -257,8 +262,10 @@ class JumpToDateContentView(ContentView):
 
 class CRUDContentView(ContentView):
 
-    def __init__(self, view_id, parent_section):
-        super().__init__(view_id, parent_section)
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+    # def __init__(self, view_id, parent_section):
+    #     super().__init__(view_id, parent_section)
         self.show_content()
 
     def show_content(self):
@@ -303,9 +310,11 @@ class CRUDContentView(ContentView):
 
 
 class CRUDSectionView(SectionView):
-
-    def __init__(self, view_id, parent_section, content: ContentView = None):
-        super().__init__(view_id, parent_section)
+    def __init__(self, view_id, parent_section=None, x=0, y=0, content: ContentView = None
+                 ):
+        super().__init__(view_id, parent_section, x, y)
+    # def __init__(self, view_id, parent_section, content: ContentView = None):
+    #     super().__init__(view_id, parent_section)
         self.content = content
         self.set_content()
 
@@ -343,13 +352,14 @@ class CRUDSectionView(SectionView):
 
 
 class SelectMonthContentView(ContentView):
-
-    def __init__(
-        self,
-        view_id,
-        parent_section,
-    ):
-        super().__init__(view_id, parent_section)
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+    # def __init__(
+    #     self,
+    #     view_id,
+    #     parent_section,
+    # ):
+    #     super().__init__(view_id, parent_section)
         self.show_content()
 
     def show_content(self):
@@ -425,17 +435,18 @@ class SelectMonthContentView(ContentView):
 
 
 class SelectMonthSectionView(SectionView):
-
-    def __init__(
-        self,
-        view_id,
-        parent_section,
-        year,
-        month,
-        day,
-        btns: ContentView = None,
-    ):
-        super().__init__(view_id, parent_section)
+    def __init__(self, view_id, parent_section=None, x=0, y=0, year=None, month=None, day=None, btns: ContentView = None):
+        super().__init__(view_id, parent_section, x, y)
+    # def __init__(
+    #     self,
+    #     view_id,
+    #     parent_section,
+    #     year,
+    #     month,
+    #     day,
+    #     btns: ContentView = None,
+    # ):
+    #     super().__init__(view_id, parent_section)
 
         self.year, self.month, self.day = year, month, day
         self.btns = btns
@@ -479,19 +490,20 @@ class SelectMonthSectionView(SectionView):
 
 
 class TopSectionView(SectionView):
+    def __init__(self, view_id, parent_section=None, x=0, y=0, year=None, month=None, header_content: ContentView = None, body_content: ContentView = None):
+        super().__init__(view_id, parent_section, x, y)
+    # def __init__(
+    #     self,
+    #     view_id,
+    #     parent_section,
+    #     year=None,
+    #     month=None,
+    #     header_content: ContentView = None,
+    #     body_content: ContentView = None,
+    # ):
+    #     super().__init__(view_id, parent_section)
 
-    def __init__(
-        self,
-        view_id,
-        parent_section,
-        year=None,
-        month=None,
-        header_content: ContentView = None,
-        body_content: ContentView = None,
-    ):
-        super().__init__(view_id, parent_section)
-
-        self.parent_section = parent_section
+    #     self.parent_section = parent_section
         if COLOR_TOGGLE:
             self.background_color = "blue"
         self.header_content = header_content
@@ -519,8 +531,11 @@ class TopSectionView(SectionView):
 
 class BelowSectionView(SectionView):
 
-    def __init__(self, view_id, parent_section):
-        super().__init__(view_id, parent_section)
+    def __init__(self, view_id, parent_section=None, x=0, y=0):
+        super().__init__(view_id, parent_section, x, y)
+
+    # def __init__(self, view_id, parent_section):
+    #     super().__init__(view_id, parent_section)
         if COLOR_TOGGLE:
             self.background_color = "purple"
         self.interface_section_list = []
@@ -568,15 +583,16 @@ class BelowSectionView(SectionView):
 
 
 class MainSectionView(SectionView):
-
-    def __init__(
-        self,
-        view_id,
-        parent_section,
-        top_section: SectionView = None,
-        below_section: SectionView = None,
-    ):
-        super().__init__(view_id, parent_section)
+    def __init__(self, view_id, parent_section=None, x=0, y=0, top_section: SectionView = None, below_section: SectionView = None):
+        super().__init__(view_id, parent_section, x, y)
+    # def __init__(
+    #     self,
+    #     view_id,
+    #     parent_section,
+    #     top_section: SectionView = None,
+    #     below_section: SectionView = None,
+    # ):
+    #     super().__init__(view_id, parent_section)
         self.root_node = self.parent_section
         self.name = f"訂位君"
 
@@ -653,6 +669,29 @@ class Program:
             dt.datetime.now().day,
         )
         self.view_id_dict = {}
+        self.init_all_components()
+        self.debug_all_components()
+
+    def debug_all_components(self):
+        all_components = {
+            "main": self.main_section_res,
+            "top": self.top_section_res,
+            "below": self.below_section_res,
+            "chc": self.calendar_header_content_res,
+            "cc": self.calendar_content_res,
+            "sms": self.select_month_section_res,
+            "smc": self.select_month_content_res,
+            "jtdc": self.jump_to_date_content_res,
+            "cruds": self.crud_section_res,
+            "crudc": self.crud_content_res,
+            "cac": self.create_arrangement_content_res
+        }
+        for name, res in all_components.items():
+            if not res.is_ok():
+                logger.error(f'{name} gone wrong: {res.err}')
+            else:
+                logger.info(f'{name} built succesfully')
+                self.register_view(res.val)
 
     def init_all_components(self):
         self.main_section_res = ViewFactory.produce_product("main", "0")
@@ -679,19 +718,22 @@ class Program:
         if self.main_section_res.is_ok() and self.top_section_res.is_ok() and self.below_section_res.is_ok():
             logger.info("start building primary section")
             self.main_section_res.val.parent_section = self
+            self.main_section_res.val.top_section, self.main_section_res.val.below_section = self.top_section_res.val, self.below_section_res.val
             self.top_section_res.val.parent_section, self.below_section_res.val.parent_section = self.main_section_res.val, self.main_section_res.val
+            self.main_section_res.val.set_content()
             self.top_section_res.val.set_content()
             self.below_section_res.val.set_content()
-            self.main_section_res.val.top_section, self.main_section_res.val.below_section = self.top_section_res.val, self.below_section_res.val
-            self.main_section_res.val.set_content()
+            self.below_section_res.val.y = self.top_section_res.val.height
             logger.info("built primary sections")
             if self.calendar_header_content_res.is_ok() and self.calendar_content_res.is_ok():
                 logger.info("building calendar and header")
+                self.top_section_res.val.header_content, self.top_section_res.val.body_content = self.calendar_header_content_res.val, self.calendar_content_res.val
                 self.calendar_header_content_res.val.parent_section = self.top_section_res.val
-                self.calendar_header_content_res.show_content()
                 self.calendar_content_res.val.parent_section = self.top_section_res.val
                 self.calendar_content_res.val.year, self.calendar_content_res.val.month, self.calendar_content_res.val.day = self.date[
                     0], self.date[1], self.date[2]
+                self.top_section_res.val.set_content()
+                self.calendar_header_content_res.val.show_content()
                 self.calendar_content_res.val.show_content()
                 logger.info("built calendar and header")
                 if self.select_month_section_res.is_ok() and self.select_month_content_res.is_ok() and self.crud_section_res.is_ok() and self.crud_content_res.is_ok():
@@ -946,6 +988,6 @@ class Program:
 if __name__ == "__main__":
     TOP_SECTION_RATIO = 4 / 7
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
-    COLOR_TOGGLE = False
+    COLOR_TOGGLE = True
     logger = Program.log()
     Program.main()
