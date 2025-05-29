@@ -572,11 +572,11 @@ class MainSectionView(SectionView):
     def __init__(
         self,
         view_id,
-        root_node,
+        parent_section,
         top_section: SectionView = None,
         below_section: SectionView = None,
     ):
-        super().__init__(view_id, root_node)
+        super().__init__(view_id, parent_section)
         self.root_node = self.parent_section
         self.name = f"訂位君"
 
@@ -663,7 +663,7 @@ class Program:
             "calendar content", "0-1-2")
         self.below_section_res = ViewFactory.produce_product("below", "0-2")
         self.select_month_section_res = ViewFactory.produce_product(
-            "select month section", "0-2-1")
+            "select month section", "0-2-1", year=self.date[0], month=self.date[1], day=self.date[2])
         self.select_month_content_res = ViewFactory.produce_product(
             "select month content", "0-2-1-1")
         self.jump_to_date_content_res = ViewFactory.produce_product(
@@ -674,6 +674,46 @@ class Program:
             "crud content", "0-2-2-1")
         self.create_arrangement_content_res = ViewFactory.produce_product(
             "create arrangement content", "0-2-2-2")
+
+    def main_screen(self):
+        if self.main_section_res.is_ok() and self.top_section_res.is_ok() and self.below_section_res.is_ok():
+            logger.info("start building primary section")
+            self.main_section_res.val.parent_section = self
+            self.top_section_res.val.parent_section, self.below_section_res.val.parent_section = self.main_section_res.val, self.main_section_res.val
+            self.top_section_res.val.set_content()
+            self.below_section_res.val.set_content()
+            self.main_section_res.val.top_section, self.main_section_res.val.below_section = self.top_section_res.val, self.below_section_res.val
+            self.main_section_res.val.set_content()
+            logger.info("built primary sections")
+            if self.calendar_header_content_res.is_ok() and self.calendar_content_res.is_ok():
+                logger.info("building calendar and header")
+                self.calendar_header_content_res.val.parent_section = self.top_section_res.val
+                self.calendar_header_content_res.show_content()
+                self.calendar_content_res.val.parent_section = self.top_section_res.val
+                self.calendar_content_res.val.year, self.calendar_content_res.val.month, self.calendar_content_res.val.day = self.date[
+                    0], self.date[1], self.date[2]
+                self.calendar_content_res.val.show_content()
+                logger.info("built calendar and header")
+                if self.select_month_section_res.is_ok() and self.select_month_content_res.is_ok() and self.crud_section_res.is_ok() and self.crud_content_res.is_ok():
+                    logger.info("building below interface")
+                    self.below_section_res.val.interface_section_list.append(
+                        self.select_month_section_res.val)
+                    self.below_section_res.val.interface_section_list.append(
+                        self.crud_section_res.val)
+                    self.select_month_section_res.val.parent_section, self.select_month_section_res.val.btns, self.select_month_content_res.val.parent_section = self.below_section_res.val, self.select_month_content_res.val, self.select_month_section_res.val
+                    self.crud_section_res.val.parent_section, self.crud_section_res.val.content, self.crud_content_res.val.parent_section = self.below_section_res.val, self.crud_content_res.val, self.crud_section_res.val
+                    self.below_section_res.val.set_content()
+                    self.select_month_section_res.val.set_content()
+                    self.crud_section_res.val.set_content()
+                    self.select_month_content_res.val.show_content()
+                    self.crud_content_res.val.show_content()
+                    logger.info("built below interface")
+                else:
+                    logger.error("building below interface gone wrong")
+            else:
+                logger.error("building calendar and header gone wrong")
+        else:
+            logger.error("building primary sections gone wrong")
 
     # region ui functions
     '''
@@ -789,7 +829,6 @@ class Program:
         crud_section.content = datepicker
         crud_section.set_content()
         # datepicker.present("sheet")
-
     '''
     # endregion
 
@@ -899,27 +938,7 @@ class Program:
         program = Program(dbhelper)
         with open("view_id.txt", "w") as f:
             f.write("View ID Registry:\n")
-        main_section_res = ViewFactory.produce_product("main", "0", program)
-        if main_section_res.is_ok():
-            main_section = main_section_res.val
-            program.register_view(main_section)
-            program.entry_screen(
-                main_section,
-                dt.datetime.now().year,
-                dt.datetime.now().month,
-                dt.datetime.now().day,
-            )
-
-        else:
-            logger.error(main_section_res.err)
-        # main_section = MainSectionView("0", program)
-        # with open("view_id.txt", "w") as f:
-        #     for i in sorted(
-        #         program.view_id_dict.keys(),
-        #         key=lambda k: [int(x) for x in k.split("-")],
-        #     ):
-        #         view = program.view_id_dict[i]
-        #         f.write(f"{i}:{view.__class__.__name__}\n")
+        program.main_screen()
 
 
 # endregion
