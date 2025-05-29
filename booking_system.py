@@ -7,8 +7,30 @@ import datetime as dt
 import calendar as cl
 from result import *
 from abstract_class import *
-from sql3_db_helper import *
-from logging_config import logger
+from sql3_db_helper import SQL3DBqueue, SQL3DBHelper
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    filename="booking.log",
+    filemode="w"
+)
+logger = logging.getLogger(__name__)
+
+
+# def add_handler(logger: logging.Logger):
+#     logger.info("start add handler")
+#     if not logger.hasHandlers():
+#         console = logging.StreamHandler()
+#         console.setLevel(logging.DEBUG)
+#         formatter = logging.Formatter(
+#             '%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+#         console.setFormatter(formatter)
+#         logger.addHandler(console)
+#         logger.info("added handler")
+#     logger.info("got handler")
+
 # endregion
 
 # region Calandar
@@ -883,4 +905,6 @@ if __name__ == "__main__":
     TOP_SECTION_RATIO = 4 / 7
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
     COLOR_TOGGLE = False
+    # add_handler(logger)
     Program.main()
+    
