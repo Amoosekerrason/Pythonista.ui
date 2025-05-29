@@ -837,6 +837,8 @@ class Program:
 
     def register_view(self, view):
         if view.view_id not in self.view_id_dict.keys():
+            logger.info(
+                f'{view.__class__.__name__}:{view.view_id} registered.')
             self.view_id_dict[view.view_id] = view
             with open("view_id.txt", "a") as f:
                 f.write(f"{view.view_id}:{view.__class__.__name__}\n")
