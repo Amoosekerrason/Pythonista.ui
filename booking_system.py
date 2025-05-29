@@ -10,16 +10,15 @@ from abstract_class import *
 from sql3_db_helper import SQL3DBqueue, SQL3DBHelper
 import logging
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename="booking.log",
-    filemode="w"
-)
-logger = logging.getLogger(__name__)
 
-
-def add_handler(logger: logging.Logger):
+def log():
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        filename="booking.log",
+        filemode="w"
+    )
+    logger = logging.getLogger(__name__)
     logger.info("start add handler")
     if not logger.handlers:
         console = logging.StreamHandler()
@@ -31,7 +30,7 @@ def add_handler(logger: logging.Logger):
         logger.info("added handler")
     else:
         logger.info("got handler")
-
+    return logger
 # endregion
 
 # region Calandar
@@ -906,5 +905,5 @@ if __name__ == "__main__":
     TOP_SECTION_RATIO = 4 / 7
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
     COLOR_TOGGLE = False
-    add_handler(logger)
+    logger = log()
     Program.main()
