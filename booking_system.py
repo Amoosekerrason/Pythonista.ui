@@ -19,17 +19,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# def add_handler(logger: logging.Logger):
-#     logger.info("start add handler")
-#     if not logger.hasHandlers():
-#         console = logging.StreamHandler()
-#         console.setLevel(logging.DEBUG)
-#         formatter = logging.Formatter(
-#             '%(asctime)s [%(levelname)s] %(name)s: %(message)s')
-#         console.setFormatter(formatter)
-#         logger.addHandler(console)
-#         logger.info("added handler")
-#     logger.info("got handler")
+def add_handler(logger: logging.Logger):
+    logger.info("start add handler")
+    if not logger.handlers:
+        console = logging.StreamHandler()
+        console.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+        console.setFormatter(formatter)
+        logger.addHandler(console)
+        logger.info("added handler")
+    else:
+        logger.info("got handler")
 
 # endregion
 
@@ -905,6 +906,5 @@ if __name__ == "__main__":
     TOP_SECTION_RATIO = 4 / 7
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
     COLOR_TOGGLE = False
-    # add_handler(logger)
+    add_handler(logger)
     Program.main()
-    
