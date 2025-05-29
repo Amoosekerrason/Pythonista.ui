@@ -11,26 +11,6 @@ from sql3_db_helper import SQL3DBqueue, SQL3DBHelper
 import logging
 
 
-def log():
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        filename="booking.log",
-        filemode="w"
-    )
-    logger = logging.getLogger(__name__)
-    logger.info("start add handler")
-    if not logger.handlers:
-        console = logging.StreamHandler()
-        console.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(
-            '%(asctime)s [%(levelname)s] %(name)s: %(message)s')
-        console.setFormatter(formatter)
-        logger.addHandler(console)
-        logger.info("added handler")
-    else:
-        logger.info("got handler")
-    return logger
 # endregion
 
 # region Calandar
@@ -673,10 +653,30 @@ class Program:
             dt.datetime.now().day,
         )
         self.view_id_dict = {}
-        self.create_arrangement_content = None
+
+    def init_all_components(self):
+        self.main_section_res = ViewFactory.produce_product("main", "0")
+        self.top_section_res = ViewFactory.produce_product("top", "0-1")
+        self.calendar_header_content_res = ViewFactory.produce_product(
+            "calandar header content", "0-1-1")
+        self.calendar_content_res = ViewFactory.produce_product(
+            "calendar content", "0-1-2")
+        self.below_section_res = ViewFactory.produce_product("below", "0-2")
+        self.select_month_section_res = ViewFactory.produce_product(
+            "select month section", "0-2-1")
+        self.select_month_content_res = ViewFactory.produce_product(
+            "select month content", "0-2-1-1")
+        self.jump_to_date_content_res = ViewFactory.produce_product(
+            "jump to date content", "0-2-1-2")
+        self.crud_section_res = ViewFactory.produce_product(
+            "crud section", "0-2-2")
+        self.crud_content_res = ViewFactory.produce_product(
+            "crud content", "0-2-2-1")
+        self.create_arrangement_content_res = ViewFactory.produce_product(
+            "create arrangement content", "0-2-2-2")
 
     # region ui functions
-
+    '''
     def entry_screen(self, main_section: SectionView, year, month, day):
         top_section_res = ViewFactory.produce_product(
             "top", "0-1", main_section)
@@ -790,6 +790,7 @@ class Program:
         crud_section.set_content()
         # datepicker.present("sheet")
 
+    '''
     # endregion
 
     # region callback functions
@@ -869,6 +870,28 @@ class Program:
         main_section.present("fullscreen")
 
     @staticmethod
+    def log():
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+            filename="booking.log",
+            filemode="w"
+        )
+        logger = logging.getLogger(__name__)
+        logger.info("start add handler")
+        if not logger.handlers:
+            console = logging.StreamHandler()
+            console.setLevel(logging.DEBUG)
+            formatter = logging.Formatter(
+                '%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+            console.setFormatter(formatter)
+            logger.addHandler(console)
+            logger.info("added handler")
+        else:
+            logger.info("got handler")
+        return logger
+
+    @staticmethod
     def main():
         logger.info("start running")
         dbqueue = SQL3DBqueue()
@@ -905,5 +928,5 @@ if __name__ == "__main__":
     TOP_SECTION_RATIO = 4 / 7
     BELOW_SECTION_RATIO = 1 - TOP_SECTION_RATIO
     COLOR_TOGGLE = False
-    logger = log()
+    logger = Program.log()
     Program.main()
