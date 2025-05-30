@@ -23,7 +23,6 @@ class CalendarHeaderContentView(ContentView):
         #     super().__init__(view_id, parent_section)
         if COLOR_TOGGLE:
             self.background_color = "yellow"
-        self.show_content()
 
     def show_content(self):
         if self.parent_section:
@@ -66,7 +65,6 @@ class CalendarContentView(ContentView):
         self.year, self.month, self.day = year, month, day
         self.previous_selected_btn = None
         self.selected_btn = None
-        self.show_content()
 
     def show_content(self):
         if not self.parent_section:
@@ -138,7 +136,6 @@ class CreateArrangementContentView(ContentView):
     def __init__(self, view_id, parent_section=None, x=0, y=0, date=None):
         super().__init__(view_id, parent_section, x, y)
         self.date = date
-        self.show_content()
 
     def show_content(self):
         if not self.parent_section:
@@ -218,7 +215,6 @@ class JumpToDateContentView(ContentView):
         super().__init__(view_id, parent_section, x, y)
         # def __init__(self, view_id, parent_section, x=0, y=0):
         #     super().__init__(view_id, parent_section, x, y)
-        self.show_content()
 
     def show_content(self):
         if not self.parent_section:
@@ -261,13 +257,13 @@ class JumpToDateContentView(ContentView):
         self.parent_section.go_to_date(date)
 
 
+
 class CRUDContentView(ContentView):
 
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
         # def __init__(self, view_id, parent_section):
         #     super().__init__(view_id, parent_section)
-        self.show_content()
 
     def show_content(self):
         if not self.parent_section:
@@ -319,7 +315,6 @@ class CRUDSectionView(SectionView):
         # def __init__(self, view_id, parent_section, content: ContentView = None):
         #     super().__init__(view_id, parent_section)
         self.content = content
-        self.set_content()
 
     def set_content(self):
         if not self.parent_section:
@@ -336,9 +331,9 @@ class CRUDSectionView(SectionView):
             self.add_subview(self.content)
 
     def go_to_date(self, date: tuple[int, int, int]):
-        self.remove_subview(self.content)
         self.parent_section.go_to_date(date)
         self.parent_section.handled_date(date)
+        self.re_crud()
 
     def create_create_arrangement_content(self):
         self.remove_subview(self.content)
@@ -364,7 +359,6 @@ class SelectMonthContentView(ContentView):
         #     parent_section,
         # ):
         #     super().__init__(view_id, parent_section)
-        self.show_content()
 
     def show_content(self):
         if self.parent_section:
@@ -464,7 +458,6 @@ class SelectMonthSectionView(SectionView):
 
         self.year, self.month, self.day = year, month, day
         self.btns = btns
-        self.set_content()
 
     def set_content(self):
 
@@ -533,7 +526,6 @@ class TopSectionView(SectionView):
             self.background_color = "blue"
         self.header_content = header_content
         self.body_content = body_content
-        self.set_content()
 
     def set_content(self):
         if not self.parent_section:
@@ -564,7 +556,6 @@ class BelowSectionView(SectionView):
         if COLOR_TOGGLE:
             self.background_color = "purple"
         self.interface_section_list = []
-        self.set_content()
 
     def set_content(self):
         if not self.parent_section:
@@ -597,7 +588,6 @@ class BelowSectionView(SectionView):
 
     def go_to_date(self, date: tuple[int, int, int]):
         self.parent_section.change_month_and_go_to_date(date[0], date[1], date[2])
-        self.parent_section.re_crud()
 
     def create_create_arrangement_content(self):
         self.parent_section.create_create_arrangement_content()
@@ -705,6 +695,8 @@ class Program:
         self.init_all_components()
         self.debug_all_components()
         self.set_all_parent()
+        self.show_all_contents()
+        self.main_screen()
 
     def init_all_components(self):
         self.main_section_res = ViewFactory.produce_product("main", "0")
@@ -713,7 +705,7 @@ class Program:
             "calandar header content", "0-1-1"
         )
         self.calendar_content_res = ViewFactory.produce_product(
-            "calendar content", "0-1-2"
+            "calendar content", "0-1-2",year=self.date[0],month=self.date[1],day=self.date[2]
         )
         self.below_section_res = ViewFactory.produce_product("below", "0-2")
         self.select_month_section_res = ViewFactory.produce_product(
@@ -777,7 +769,15 @@ class Program:
             logger.info("all sections parent setted")
         else:
             logger.error("setting all parent gone wrong")
-
+    def show_all_contents(self):
+        logger.info("showing all contents")
+        self.crud_content_res.val.show_content()
+        self.calendar_header_content_res.val.show_content()
+        self.calendar_content_res.val.show_content()
+        self.jump_to_date_content_res.val.show_content()
+        self.select_month_content_res.val.show_content()
+        self.create_arrangement_content_res.val.show_content()
+        logger.info("shown all contents")
     # region ui functions
 
     def main_screen(self):
@@ -814,8 +814,6 @@ class Program:
                     self.calendar_content_res.val.day,
                 ) = (self.date[0], self.date[1], self.date[2])
                 self.top_section_res.val.set_content()
-                self.calendar_header_content_res.val.show_content()
-                self.calendar_content_res.val.show_content()
                 logger.info("built calendar and header")
                 if (
                     self.select_month_section_res.is_ok()
@@ -830,13 +828,11 @@ class Program:
                     self.below_section_res.val.interface_section_list.append(
                         self.crud_section_res.val
                     )
-                    self.select_month_section_res.val.btns=self.select_month_content_res.val,
+                    self.select_month_section_res.val.btns=self.select_month_content_res.val
                     self.crud_section_res.val.content=self.crud_content_res.val
                     self.below_section_res.val.set_content()
                     self.select_month_section_res.val.set_content()
                     self.crud_section_res.val.set_content()
-                    self.select_month_content_res.val.show_content()
-                    self.crud_content_res.val.show_content()
                     logger.info("built below interface")
                 else:
                     logger.error("building below interface gone wrong")
@@ -846,12 +842,11 @@ class Program:
             logger.error("building primary sections gone wrong")
 
     def crud_to_date_picker(self):
-        for subview in self.crud_content_res.val.subviews:
-            subview.hidden = True
         datepicker = self.jump_to_date_content_res.val
-        self.crud_content_res.val.content = datepicker
-        self.crud_content_res.val.set_content()
-
+        crud_section = self.crud_section_res.val
+        crud_section.content = datepicker
+        crud_section.set_content()
+ 
     # endregion
 
     # region callback functions
@@ -863,18 +858,18 @@ class Program:
         crud_section.set_content()
 
     def change_month_and_go_to_date(
-        self, year, month, date
+        self, year, month, day
     ) -> Result[tuple[int, int, int], str]:
 
         try:
             create_arrangement_ui = self.create_arrangement_content_res.val
             if create_arrangement_ui:
-                create_arrangement_ui.handled_date((year, month, date))
-            self.date = (year, month, date)
+                create_arrangement_ui.handled_date((year, month, day))
+            self.date = (year, month, day)
             calendar = self.calendar_content_res.val
-            calendar.year, calendar.month, calendar.day = year, month, date
+            calendar.year, calendar.month, calendar.day = year, month, day
             calendar.show_content()
-            return Ok((year, month, int(date)))
+            return Ok((year, month, int(day)))
         except Exception as e:
             return Err(str(e))
 
@@ -964,7 +959,7 @@ class Program:
         program = Program(dbhelper)
         with open("view_id.txt", "w") as f:
             f.write("View ID Registry:\n")
-        program.main_screen()
+
 
 
 # endregion
