@@ -704,6 +704,7 @@ class Program:
         self.view_id_dict = {}
         self.init_all_components()
         self.debug_all_components()
+        self.set_all_parent()
 
     def init_all_components(self):
         self.main_section_res = ViewFactory.produce_product("main", "0")
@@ -757,15 +758,25 @@ class Program:
         
     def set_all_parent(self):
         logger.info("setting all parent")
-        self.debug_all_components()
         if all(res.is_ok() for res in self.all_components.values()):
             logger.info("setting primary section's parent")
             self.main_section_res.val.parent_section = self
             self.top_section_res.val.parent_section = self.main_section_res.val
             self.below_section_res.val.parent_section = self.main_section_res.val
-
+            logger.info("setting top sections.calendar")
+            self.calendar_header_content_res.val.parent_section=self.top_section_res.val
+            self.calendar_content_res.val.parent_section=self.top_section_res.val
+            logger.info("setting below sections.select_month")
+            self.select_month_section_res.val.parent_section=self.below_section_res.val
+            self.select_month_content_res.val.parent_section=self.select_month_section_res.val
+            logger.info("setting below sections.crud")
+            self.crud_section_res.val.parent_section=self.below_section_res.val
+            self.crud_content_res.val.parent_section=self.crud_section_res.val
+            self.jump_to_date_content_res.val.parent_section=self.crud_section_res.val
+            self.create_arrangement_content_res.val.parent_section=self.crud_section_res.val
+            logger.info("all sections parent setted")
         else:
-            logger.error("set all parent gone wrong")
+            logger.error("setting all parent gone wrong")
 
     # region ui functions
 
@@ -776,15 +787,10 @@ class Program:
             and self.below_section_res.is_ok()
         ):
             logger.info("start building primary section")
-            self.main_section_res.val.parent_section = self
             (
                 self.main_section_res.val.top_section,
                 self.main_section_res.val.below_section,
             ) = (self.top_section_res.val, self.below_section_res.val)
-            (
-                self.top_section_res.val.parent_section,
-                self.below_section_res.val.parent_section,
-            ) = (self.main_section_res.val, self.main_section_res.val)
             self.main_section_res.val.set_content()
             self.top_section_res.val.set_content()
             self.below_section_res.val.set_content()
@@ -802,10 +808,6 @@ class Program:
                     self.calendar_header_content_res.val,
                     self.calendar_content_res.val,
                 )
-                self.calendar_header_content_res.val.parent_section = (
-                    self.top_section_res.val
-                )
-                self.calendar_content_res.val.parent_section = self.top_section_res.val
                 (
                     self.calendar_content_res.val.year,
                     self.calendar_content_res.val.month,
@@ -828,24 +830,8 @@ class Program:
                     self.below_section_res.val.interface_section_list.append(
                         self.crud_section_res.val
                     )
-                    (
-                        self.select_month_section_res.val.parent_section,
-                        self.select_month_section_res.val.btns,
-                        self.select_month_content_res.val.parent_section,
-                    ) = (
-                        self.below_section_res.val,
-                        self.select_month_content_res.val,
-                        self.select_month_section_res.val,
-                    )
-                    (
-                        self.crud_section_res.val.parent_section,
-                        self.crud_section_res.val.content,
-                        self.crud_content_res.val.parent_section,
-                    ) = (
-                        self.below_section_res.val,
-                        self.crud_content_res.val,
-                        self.crud_section_res.val,
-                    )
+                    self.select_month_section_res.val.btns=self.select_month_content_res.val,
+                    self.crud_section_res.val.content=self.crud_content_res.val
                     self.below_section_res.val.set_content()
                     self.select_month_section_res.val.set_content()
                     self.crud_section_res.val.set_content()
