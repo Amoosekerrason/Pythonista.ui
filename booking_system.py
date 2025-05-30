@@ -695,8 +695,8 @@ class Program:
         self.init_all_components()
         self.debug_all_components()
         self.set_all_parent()
-        self.show_all_contents()
         self.main_screen()
+        self.show_all_contents()
 
     def init_all_components(self):
         self.main_section_res = ViewFactory.produce_product("main", "0")
@@ -959,7 +959,7 @@ class Program:
         program = Program(dbhelper)
         with open("view_id.txt", "w") as f:
             f.write("View ID Registry:\n")
-
+        # program.main_screen()
 
 
 # endregion
