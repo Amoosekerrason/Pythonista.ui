@@ -754,7 +754,7 @@ class Program:
         self.crud_content_res = ViewFactory.produce_product(
             "crud content", "0-2-2-1")
         self.create_arrangement_content_res = ViewFactory.produce_product(
-            "create arrangement content", "0-2-2-2")
+            "create arrangement content", "0-2-2-2",date=self.date)
   # region ui functions
 
     def main_screen(self):
@@ -805,7 +805,7 @@ class Program:
             logger.error("building primary sections gone wrong")
 
     def crud_to_date_picker(self):
-        for subview in self.crud_content_res.subviews:
+        for subview in self.crud_content_res.val.subviews:
             subview.hidden = True
         datepicker = self.jump_to_date_content_res.val
         self.crud_content_res.content = datepicker
@@ -855,7 +855,7 @@ class Program:
 
     def create_create_arrangement_content(self):
         crud_section = self.crud_section_res.val
-        if not self.create_arrangement_content:
+        if not self.create_arrangement_content_res:
             create_arrangement_content_res = ViewFactory.produce_product(
                 "create arrangement content", "0-2-2-3", crud_section, date=self.date)
             if create_arrangement_content_res.is_ok():
@@ -866,9 +866,10 @@ class Program:
             else:
                 logger.error(create_arrangement_content_res.err)
         else:
-            self.create_arrangement_content.hidden = False
-            crud_section.content = self.create_arrangement_content
+            self.create_arrangement_content_res.val.hidden,self.create_arrangement_content_res.val.parent_section = False,crud_section
+            crud_section.content = self.create_arrangement_content_res.val
             crud_section.set_content()
+            crud_section.content.show_content()
 
     # endregion
 
