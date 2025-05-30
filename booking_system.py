@@ -755,17 +755,17 @@ class Program:
                 logger.info(f"{name} built succesfully")
                 self.register_view(res.val)
         
-        def set_all_parent(self):
-            logger.info("setting all parent")
-            self.debug_all_components()
-            if all(res.is_ok() for res in self.all_components.values()):
-                logger.info("setting primary section's parent")
-                self.main_section_res.val.parent_section = self
-                self.top_section_res.val.parent_section = self.main_section_res.val
-                self.below_section_res.val.parent_section = self.main_section_res.val
+    def set_all_parent(self):
+        logger.info("setting all parent")
+        self.debug_all_components()
+        if all(res.is_ok() for res in self.all_components.values()):
+            logger.info("setting primary section's parent")
+            self.main_section_res.val.parent_section = self
+            self.top_section_res.val.parent_section = self.main_section_res.val
+            self.below_section_res.val.parent_section = self.main_section_res.val
 
-            else:
-                logger.error("set all parent gone wrong")
+        else:
+            logger.error("set all parent gone wrong")
 
     # region ui functions
 
