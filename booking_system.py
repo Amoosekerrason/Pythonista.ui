@@ -10,7 +10,6 @@ from abstract_class import *
 from sql3_db_helper import SQL3DBqueue, SQL3DBHelper
 import logging
 
-
 # endregion
 
 # region Calandar
@@ -20,8 +19,8 @@ class CalendarHeaderContentView(ContentView):
 
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-    # def __init__(self, view_id, parent_section):
-    #     super().__init__(view_id, parent_section)
+        # def __init__(self, view_id, parent_section):
+        #     super().__init__(view_id, parent_section)
         if COLOR_TOGGLE:
             self.background_color = "yellow"
         self.show_content()
@@ -48,18 +47,25 @@ class CalendarHeaderContentView(ContentView):
 
 class CalendarContentView(ContentView):
 
-    def __init__(self, view_id, parent_section=None, x=0, y=0, year=None, month=None, day=None):
+    def __init__(self,
+                 view_id,
+                 parent_section=None,
+                 x=0,
+                 y=0,
+                 year=None,
+                 month=None,
+                 day=None):
         super().__init__(view_id, parent_section, x, y)
-    # def __init__(
-    #     self,
-    #     view_id,
-    #     parent_section,
-    #     year=None,
-    #     month=None,
-    #     day=None,
-    # ):
-    #     super().__init__(view_id, parent_section)
-    #     self.parent_section = parent_section
+        # def __init__(
+        #     self,
+        #     view_id,
+        #     parent_section,
+        #     year=None,
+        #     month=None,
+        #     day=None,
+        # ):
+        #     super().__init__(view_id, parent_section)
+        #     self.parent_section = parent_section
         if COLOR_TOGGLE:
             self.background_color = "pink"
         self.year, self.month, self.day = year, month, day
@@ -213,10 +219,11 @@ class DeleteArrangementContentView(ContentView):
 
 
 class JumpToDateContentView(ContentView):
+
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-    # def __init__(self, view_id, parent_section, x=0, y=0):
-    #     super().__init__(view_id, parent_section, x, y)
+        # def __init__(self, view_id, parent_section, x=0, y=0):
+        #     super().__init__(view_id, parent_section, x, y)
         self.show_content()
 
     def show_content(self):
@@ -264,8 +271,8 @@ class CRUDContentView(ContentView):
 
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-    # def __init__(self, view_id, parent_section):
-    #     super().__init__(view_id, parent_section)
+        # def __init__(self, view_id, parent_section):
+        #     super().__init__(view_id, parent_section)
         self.show_content()
 
     def show_content(self):
@@ -310,11 +317,16 @@ class CRUDContentView(ContentView):
 
 
 class CRUDSectionView(SectionView):
-    def __init__(self, view_id, parent_section=None, x=0, y=0, content: ContentView = None
-                 ):
+
+    def __init__(self,
+                 view_id,
+                 parent_section=None,
+                 x=0,
+                 y=0,
+                 content: ContentView = None):
         super().__init__(view_id, parent_section, x, y)
-    # def __init__(self, view_id, parent_section, content: ContentView = None):
-    #     super().__init__(view_id, parent_section)
+        # def __init__(self, view_id, parent_section, content: ContentView = None):
+        #     super().__init__(view_id, parent_section)
         self.content = content
         self.set_content()
 
@@ -352,14 +364,15 @@ class CRUDSectionView(SectionView):
 
 
 class SelectMonthContentView(ContentView):
+
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-    # def __init__(
-    #     self,
-    #     view_id,
-    #     parent_section,
-    # ):
-    #     super().__init__(view_id, parent_section)
+        # def __init__(
+        #     self,
+        #     view_id,
+        #     parent_section,
+        # ):
+        #     super().__init__(view_id, parent_section)
         self.show_content()
 
     def show_content(self):
@@ -435,18 +448,27 @@ class SelectMonthContentView(ContentView):
 
 
 class SelectMonthSectionView(SectionView):
-    def __init__(self, view_id, parent_section=None, x=0, y=0, year=None, month=None, day=None, btns: ContentView = None):
+
+    def __init__(self,
+                 view_id,
+                 parent_section=None,
+                 x=0,
+                 y=0,
+                 year=None,
+                 month=None,
+                 day=None,
+                 btns: ContentView = None):
         super().__init__(view_id, parent_section, x, y)
-    # def __init__(
-    #     self,
-    #     view_id,
-    #     parent_section,
-    #     year,
-    #     month,
-    #     day,
-    #     btns: ContentView = None,
-    # ):
-    #     super().__init__(view_id, parent_section)
+        # def __init__(
+        #     self,
+        #     view_id,
+        #     parent_section,
+        #     year,
+        #     month,
+        #     day,
+        #     btns: ContentView = None,
+        # ):
+        #     super().__init__(view_id, parent_section)
 
         self.year, self.month, self.day = year, month, day
         self.btns = btns
@@ -490,20 +512,29 @@ class SelectMonthSectionView(SectionView):
 
 
 class TopSectionView(SectionView):
-    def __init__(self, view_id, parent_section=None, x=0, y=0, year=None, month=None, header_content: ContentView = None, body_content: ContentView = None):
-        super().__init__(view_id, parent_section, x, y)
-    # def __init__(
-    #     self,
-    #     view_id,
-    #     parent_section,
-    #     year=None,
-    #     month=None,
-    #     header_content: ContentView = None,
-    #     body_content: ContentView = None,
-    # ):
-    #     super().__init__(view_id, parent_section)
 
-    #     self.parent_section = parent_section
+    def __init__(self,
+                 view_id,
+                 parent_section=None,
+                 x=0,
+                 y=0,
+                 year=None,
+                 month=None,
+                 header_content: ContentView = None,
+                 body_content: ContentView = None):
+        super().__init__(view_id, parent_section, x, y)
+        # def __init__(
+        #     self,
+        #     view_id,
+        #     parent_section,
+        #     year=None,
+        #     month=None,
+        #     header_content: ContentView = None,
+        #     body_content: ContentView = None,
+        # ):
+        #     super().__init__(view_id, parent_section)
+
+        #     self.parent_section = parent_section
         if COLOR_TOGGLE:
             self.background_color = "blue"
         self.header_content = header_content
@@ -534,8 +565,8 @@ class BelowSectionView(SectionView):
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
 
-    # def __init__(self, view_id, parent_section):
-    #     super().__init__(view_id, parent_section)
+        # def __init__(self, view_id, parent_section):
+        #     super().__init__(view_id, parent_section)
         if COLOR_TOGGLE:
             self.background_color = "purple"
         self.interface_section_list = []
@@ -583,16 +614,23 @@ class BelowSectionView(SectionView):
 
 
 class MainSectionView(SectionView):
-    def __init__(self, view_id, parent_section=None, x=0, y=0, top_section: SectionView = None, below_section: SectionView = None):
+
+    def __init__(self,
+                 view_id,
+                 parent_section=None,
+                 x=0,
+                 y=0,
+                 top_section: SectionView = None,
+                 below_section: SectionView = None):
         super().__init__(view_id, parent_section, x, y)
-    # def __init__(
-    #     self,
-    #     view_id,
-    #     parent_section,
-    #     top_section: SectionView = None,
-    #     below_section: SectionView = None,
-    # ):
-    #     super().__init__(view_id, parent_section)
+        # def __init__(
+        #     self,
+        #     view_id,
+        #     parent_section,
+        #     top_section: SectionView = None,
+        #     below_section: SectionView = None,
+        # ):
+        #     super().__init__(view_id, parent_section)
         self.root_node = self.parent_section
         self.name = f"訂位君"
 
@@ -702,7 +740,11 @@ class Program:
             "calendar content", "0-1-2")
         self.below_section_res = ViewFactory.produce_product("below", "0-2")
         self.select_month_section_res = ViewFactory.produce_product(
-            "select month section", "0-2-1", year=self.date[0], month=self.date[1], day=self.date[2])
+            "select month section",
+            "0-2-1",
+            year=self.date[0],
+            month=self.date[1],
+            day=self.date[2])
         self.select_month_content_res = ViewFactory.produce_product(
             "select month content", "0-2-1-1")
         self.jump_to_date_content_res = ViewFactory.produce_product(
@@ -713,9 +755,11 @@ class Program:
             "crud content", "0-2-2-1")
         self.create_arrangement_content_res = ViewFactory.produce_product(
             "create arrangement content", "0-2-2-2")
+  # region ui functions
 
     def main_screen(self):
-        if self.main_section_res.is_ok() and self.top_section_res.is_ok() and self.below_section_res.is_ok():
+        if self.main_section_res.is_ok() and self.top_section_res.is_ok(
+        ) and self.below_section_res.is_ok():
             logger.info("start building primary section")
             self.main_section_res.val.parent_section = self
             self.main_section_res.val.top_section, self.main_section_res.val.below_section = self.top_section_res.val, self.below_section_res.val
@@ -725,7 +769,8 @@ class Program:
             self.below_section_res.val.set_content()
             self.below_section_res.val.y = self.top_section_res.val.height
             logger.info("built primary sections")
-            if self.calendar_header_content_res.is_ok() and self.calendar_content_res.is_ok():
+            if self.calendar_header_content_res.is_ok(
+            ) and self.calendar_content_res.is_ok():
                 logger.info("building calendar and header")
                 self.top_section_res.val.header_content, self.top_section_res.val.body_content = self.calendar_header_content_res.val, self.calendar_content_res.val
                 self.calendar_header_content_res.val.parent_section = self.top_section_res.val
@@ -736,7 +781,9 @@ class Program:
                 self.calendar_header_content_res.val.show_content()
                 self.calendar_content_res.val.show_content()
                 logger.info("built calendar and header")
-                if self.select_month_section_res.is_ok() and self.select_month_content_res.is_ok() and self.crud_section_res.is_ok() and self.crud_content_res.is_ok():
+                if self.select_month_section_res.is_ok(
+                ) and self.select_month_content_res.is_ok(
+                ) and self.crud_section_res.is_ok() and self.crud_content_res.is_ok():
                     logger.info("building below interface")
                     self.below_section_res.val.interface_section_list.append(
                         self.select_month_section_res.val)
@@ -757,129 +804,20 @@ class Program:
         else:
             logger.error("building primary sections gone wrong")
 
-    # region ui functions
-    '''
-    def entry_screen(self, main_section: SectionView, year, month, day):
-        top_section_res = ViewFactory.produce_product(
-            "top", "0-1", main_section)
-        if top_section_res.is_ok():
-            self.top_section = top_section_res.val
-            self.top_section.x = 0
-            self.top_section.y = 0
-            self.register_view(self.top_section)
-            below_section_res = ViewFactory.produce_product("below", "0-2",
-                                                            main_section)
-            if below_section_res.is_ok():
-                self.below_section = below_section_res.val
-                self.below_section.x = 0
-                self.below_section.y = self.top_section.height
-                self.register_view(self.below_section)
-                top_content = self.show_calendar(
-                    year, month, day, self.top_section)
-                below_content = self.show_interface(year, month, day,
-                                                    self.below_section)
-                main_section.top_section = top_content
-                main_section.below_section = below_content
-                main_section.set_content()
-            else:
-                logger.error(below_section_res.err)
-        else:
-            logger.error(top_section_res.err)
-
-    def show_calendar(self,
-                      year,
-                      month,
-                      day,
-                      section: SectionView = None) -> SectionView:
-
-        header_view = CalendarHeaderContentView(
-            "0-1-1", parent_section=section)
-        body_view = CalendarContentView("0-1-2",
-                                        parent_section=section,
-                                        year=year,
-                                        month=month,
-                                        day=day)
-
-        self.register_view(header_view)
-
-        self.register_view(body_view)
-
-        section.header_content = header_view
-        section.body_content = body_view
-        section.add_subview(section.header_content)
-        section.add_subview(section.body_content)
-        return section
-
-    def show_interface(self,
-                       year,
-                       month,
-                       day,
-                       section: SectionView = None) -> SectionView:
-        select_month_section = self.get_select_month_section(
-            year, month, day, section)
-
-        crud_section = self.get_crud_section()
-        try:
-            section.interface_section_list.append(select_month_section)
-            section.interface_section_list.append(crud_section)
-            section.set_content()
-            return section
-        except Exception as e:
-            raise Exception(
-                f"this section doesn't have interface section list") from e
-
-    def get_select_month_section(self,
-                                 year,
-                                 month,
-                                 day,
-                                 section: SectionView = None):
-        select_month_section = SelectMonthSectionView(
-            "0-2-1",
-            section,
-            year,
-            month,
-            day,
-        )
-        select_month_btns = SelectMonthContentView(
-            "0-2-1-1", select_month_section)
-        self.register_view(select_month_section)
-        self.register_view(select_month_btns)
-
-        select_month_section.btns = select_month_btns
-        select_month_section.set_content()
-        return select_month_section
-
-    def get_crud_section(self):
-        crud_section = CRUDSectionView("0-2-2", self.below_section)
-        crud_content = CRUDContentView("0-2-2-1", crud_section)
-
-        self.register_view(crud_section)
-
-        self.register_view(crud_content)
-
-        crud_section.content = crud_content
-        crud_section.set_content()
-        return crud_section
-
     def crud_to_date_picker(self):
-        crud_section = self.view_id_dict["0-2-2"]
-        # self.remove_all_view(crud_section)
-        for subview in crud_section.subviews:
+        for subview in self.crud_content_res.subviews:
             subview.hidden = True
-        datepicker = JumpToDateContentView("0-2-2-2", crud_section)
-        self.register_view(datepicker)
-        crud_section.content = datepicker
-        crud_section.set_content()
-        # datepicker.present("sheet")
-    '''
+        datepicker = self.jump_to_date_content_res.val
+        self.crud_content_res.content = datepicker
+        self.crud_content_res.set_content()
+
     # endregion
 
     # region callback functions
 
     def re_crud(self):
-        crud_section = self.view_id_dict["0-2-2"]
-        crud_content = CRUDContentView("0-2-2-1", crud_section)
-        # crud_content = self.view_id_dict["0-2-2-1"]
+        crud_section = self.crud_section_res.val
+        crud_content = self.crud_content_res.val
         crud_section.content = crud_content
         crud_section.set_content()
 
@@ -887,11 +825,11 @@ class Program:
                                     date) -> Result[tuple[int, int, int], str]:
 
         try:
-            create_arrangement_ui = self.view_id_dict.get("0-2-2-3", None)
+            create_arrangement_ui = self.create_arrangement_content_res.val
             if create_arrangement_ui:
                 create_arrangement_ui.handled_date((year, month, date))
             self.date = (year, month, date)
-            calendar = self.view_id_dict["0-1-2"]
+            calendar = self.calendar_content_res.val
             calendar.year, calendar.month, calendar.day = year, month, date
             calendar.show_content()
             return Ok((year, month, int(date)))
@@ -902,9 +840,9 @@ class Program:
                     date) -> Result[tuple[int, int, int], str]:
         self.date = (year, month, date)
 
-        below_section = self.view_id_dict["0-2"]
-        main_section = self.view_id_dict["0"]
-        create_arrangement_ui = self.view_id_dict.get("0-2-2-3", None)
+        below_section = self.below_section_res.val
+        main_section = self.main_section_res.val
+        create_arrangement_ui = self.create_arrangement_content_res.val
         try:
             if create_arrangement_ui:
                 create_arrangement_ui.handled_date(self.date)
@@ -916,7 +854,7 @@ class Program:
             return Err(str(e))
 
     def create_create_arrangement_content(self):
-        crud_section = self.view_id_dict["0-2-2"]
+        crud_section = self.crud_section_res.val
         if not self.create_arrangement_content:
             create_arrangement_content_res = ViewFactory.produce_product(
                 "create arrangement content", "0-2-2-3", crud_section, date=self.date)
@@ -956,8 +894,7 @@ class Program:
             level=logging.DEBUG,
             format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
             filename="booking.log",
-            filemode="w"
-        )
+            filemode="w")
         logger = logging.getLogger(__name__)
         logger.info("start add handler")
         if not logger.handlers:
