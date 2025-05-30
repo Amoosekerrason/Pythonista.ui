@@ -747,14 +747,14 @@ class Program:
             day=self.date[2])
         self.select_month_content_res = ViewFactory.produce_product(
             "select month content", "0-2-1-1")
-        self.jump_to_date_content_res = ViewFactory.produce_product(
-            "jump to date content", "0-2-1-2")
         self.crud_section_res = ViewFactory.produce_product(
             "crud section", "0-2-2")
         self.crud_content_res = ViewFactory.produce_product(
             "crud content", "0-2-2-1")
+        self.jump_to_date_content_res = ViewFactory.produce_product(
+            "jump to date content", "0-2-2-2")
         self.create_arrangement_content_res = ViewFactory.produce_product(
-            "create arrangement content", "0-2-2-2",date=self.date)
+            "create arrangement content", "0-2-2-3", date=self.date)
   # region ui functions
 
     def main_screen(self):
@@ -866,7 +866,7 @@ class Program:
             else:
                 logger.error(create_arrangement_content_res.err)
         else:
-            self.create_arrangement_content_res.val.hidden,self.create_arrangement_content_res.val.parent_section = False,crud_section
+            self.create_arrangement_content_res.val.hidden, self.create_arrangement_content_res.val.parent_section = False, crud_section
             crud_section.content = self.create_arrangement_content_res.val
             crud_section.set_content()
             crud_section.content.show_content()
