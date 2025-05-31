@@ -167,8 +167,6 @@ class CreateArrangementContentView(ContentView):
 
     def re_crud(self, sender):
         self.change_field_text()
-        print(f'性別是 {self.create_arrangement_ui["gender_text"].text}')
-        print(f'接洽人是 {self.create_arrangement_ui["contact_text"].text}')
         self.parent_section.re_crud()
 
     def handled_date(self, date: tuple[int, int, int]):
@@ -336,11 +334,9 @@ class CRUDSectionView(SectionView):
         self.re_crud()
 
     def create_create_arrangement_content(self):
-        self.remove_subview(self.content)
         self.parent_section.create_create_arrangement_content()
 
     def re_crud(self):
-        self.remove_subview(self.content)
         self.parent_section.re_crud()
 
 
@@ -844,6 +840,7 @@ class Program:
     def crud_to_date_picker(self):
         datepicker = self.jump_to_date_content_res.val
         crud_section = self.crud_section_res.val
+        crud_section.remove_subview(crud_section.content)
         crud_section.content = datepicker
         crud_section.set_content()
  
@@ -853,6 +850,7 @@ class Program:
 
     def re_crud(self):
         crud_section = self.crud_section_res.val
+        crud_section.remove_subview(crud_section.content)
         crud_content = self.crud_content_res.val
         crud_section.content = crud_content
         crud_section.set_content()
@@ -891,6 +889,7 @@ class Program:
 
     def create_create_arrangement_content(self):
         crud_section = self.crud_section_res.val
+        crud_section.remove_subview(crud_section.content)
         if not self.create_arrangement_content_res:
             create_arrangement_content_res = ViewFactory.produce_product(
                 "create arrangement content", "0-2-2-3", crud_section, date=self.date
@@ -903,13 +902,11 @@ class Program:
             else:
                 logger.error(create_arrangement_content_res.err)
         else:
-            (
-                self.create_arrangement_content_res.val.hidden,
-                self.create_arrangement_content_res.val.parent_section,
-            ) = (False, crud_section)
+            # (
+            #     self.create_arrangement_content_res.val.hidden,
+            # ) = (False)
             crud_section.content = self.create_arrangement_content_res.val
             crud_section.set_content()
-            crud_section.content.show_content()
 
     # endregion
 
