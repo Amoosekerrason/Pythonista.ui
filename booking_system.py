@@ -173,7 +173,7 @@ class CreateArrangementContentView(ContentView):
             self.create_arrangement_ui["gender_text"].text = "先生"
         elif self.create_arrangement_ui["gender_text"].text.lower() == "s":
             self.create_arrangement_ui["gender_text"].text = "小姐"
-        if self.create_arrangement_ui["memo_text"].text == None:
+        if self.create_arrangement_ui["memo_text"].text == "":
             self.create_arrangement_ui["memo_text"].text = "無備註"
         '''
         if self.create_arrangement_ui["contact_text"].text in self.contacter_data.keys():
@@ -193,9 +193,20 @@ class CreateArrangementContentView(ContentView):
         arrangement_data["table"] = self.create_arrangement_ui["table_text"].text
         arrangement_data["phone"] = self.create_arrangement_ui["phone_text"].text
         arrangement_data["contact"] = self.create_arrangement_ui["contact_text"].text
-        arrangement_data["want"] = self.create_arrangement_ui["want_switch"].value
-        arrangement_data["shoeson"] = self.create_arrangement_ui["shoeson_switch"].value
-        arrangement_data["shoesoff"] = self.create_arrangement_ui["shoesoff_switch"].value
+        if self.create_arrangement_ui["want_switch"].value == True:
+            arrangement_data["want"] = "1"
+        else:
+            arrangement_data["want"] = "0"
+
+        if self.create_arrangement_ui["shoeson_switch"].value == True:
+            arrangement_data["shoeson"] = "1"
+        else:
+            arrangement_data["shoeson"] = "0"
+
+        if self.create_arrangement_ui["shoesoff_switch"].value == True:
+            arrangement_data["shoesoff"] = "1"
+        else:
+            arrangement_data["shoesoff"] = "0"
         arrangement_data["memo"] = self.create_arrangement_ui["memo_text"].text
 
         return arrangement_data
@@ -211,6 +222,7 @@ class CreateArrangementContentView(ContentView):
     def re_crud(self, sender):
         self.change_field_text()
         data = self.send_data_to_db()
+        logger.info(data)
         if all(data.values()):
             self.parent_section.send_data_to_db(data)
             self.parent_section.re_crud()
