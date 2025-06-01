@@ -167,13 +167,13 @@ class CreateArrangementContentView(ContentView):
         self.create_arrangement_ui["shoeson_switch"].action = self.shoes_on
         self.create_arrangement_ui["shoesoff_switch"].action = self.shoes_off
         self.add_subview(self.create_arrangement_ui)
-
+    
     def change_field_text(self):
         if self.create_arrangement_ui["gender_text"].text.lower() == "r":
             self.create_arrangement_ui["gender_text"].text = "先生"
         elif self.create_arrangement_ui["gender_text"].text.lower() == "s":
             self.create_arrangement_ui["gender_text"].text = "小姐"
-        if self.create_arrangement_ui["memo_text"].text == "":
+        if not self.create_arrangement_ui["memo_text"].text.strip():
             self.create_arrangement_ui["memo_text"].text = "無備註"
         '''
         if self.create_arrangement_ui["contact_text"].text in self.contacter_data.keys():
@@ -222,13 +222,12 @@ class CreateArrangementContentView(ContentView):
     def re_crud(self, sender):
         self.change_field_text()
         data = self.send_data_to_db()
-        logger.info(data)
         if all(data.values()):
             self.parent_section.send_data_to_db(data)
             self.parent_section.re_crud()
         else:
             warning = View()
-            warning.name = "請輸入完整訊息"
+            warning.name = "請輸入完整資料"
             warning.present("popover")
 
     def handled_date(self, date: tuple[int, int, int]):
