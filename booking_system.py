@@ -140,7 +140,7 @@ class CalendarContentView(ContentView):
 # region CRUD ui
 class CreateArrangementContentView(ContentView):
 
-    def __init__(self, view_id, parent_section=None, x=0, y=0, date=None, contacter_data=None):
+    def __init__(self, view_id, parent_section=None, x=0, y=0, date=None, contacter_data: dict = None):
         super().__init__(view_id, parent_section, x, y)
         self.date = date
         self.contacter_data = contacter_data
@@ -173,8 +173,8 @@ class CreateArrangementContentView(ContentView):
             self.create_arrangement_ui["gender_text"].text = "先生"
         elif self.create_arrangement_ui["gender_text"].text.lower() == "s":
             self.create_arrangement_ui["gender_text"].text = "小姐"
-        if self.create_arrangement_ui["contact_text"].text == "000":
-            self.create_arrangement_ui["contact_text"].text = "陳帥"
+        if self.create_arrangement_ui["contact_text"].text in self.contacter_data.keys():
+            self.create_arrangement_ui["contact_text"].text = self.contacter_data[self.create_arrangement_ui["contact_text"].text]
 
     def send_data_to_db(self):
         arrangement_data = {}
@@ -193,20 +193,27 @@ class CreateArrangementContentView(ContentView):
         arrangement_data["shoeson"] = self.create_arrangement_ui["shoeson_switch"].value
         arrangement_data["shoesoff"] = self.create_arrangement_ui["shoesoff_switch"].value
         arrangement_data["memo"] = self.create_arrangement_ui["memo_text"].text
-        self.parent_section.send_data_to_db(arrangement_data)
+
+        return arrangement_data
 
     def shoes_on(self, sender):
-        if self.create_arrangement_ui["shoeson_switch"].value == True:
+        if sender.value == True:
             self.create_arrangement_ui["shoesoff_switch"].value = False
 
     def shoes_off(self, sender):
-        if self.create_arrangement_ui["shoesoff_switch"].value == True:
+        if sender.value == True:
             self.create_arrangement_ui["shoeson_switch"].value = False
 
     def re_crud(self, sender):
         self.change_field_text()
-        self.send_data_to_db()
-        self.parent_section.re_crud()
+        data = self.send_data_to_db()
+        if all(data.keys() != None):
+            self.parent_section.send_data_to_db(data)
+            self.parent_section.re_crud()
+        else:
+            warning = View()
+            warning.name = "請輸入完整訊息"
+            warning.present("popover")
 
     def handled_date(self, date: tuple[int, int, int]):
         self.year_filed.text = str(date[0] - 1911)
