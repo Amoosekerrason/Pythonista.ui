@@ -164,8 +164,8 @@ class CreateArrangementContentView(ContentView):
         self.day_field = self.create_arrangement_ui["day_text"]
         self.day_field.text = str(self.date[2])
         self.create_arrangement_ui["send_btn"].action = self.re_crud
-        self.create_arrangement_ui["shoeson_switch"].action = self.shoes_what
-        self.create_arrangement_ui["shoesoff_switch"].action = self.shoes_what
+        self.create_arrangement_ui["shoeson_switch"].action = self.shoes_on
+        self.create_arrangement_ui["shoesoff_switch"].action = self.shoes_off
         self.add_subview(self.create_arrangement_ui)
 
     def change_field_text(self):
@@ -195,9 +195,11 @@ class CreateArrangementContentView(ContentView):
         arrangement_data["memo"] = self.create_arrangement_ui["memo_text"].text
         self.parent_section.send_data_to_db(arrangement_data)
 
-    def shoes_what(self):
+    def shoes_on(self, sender):
         if self.create_arrangement_ui["shoeson_switch"].value == True:
             self.create_arrangement_ui["shoesoff_switch"].value = False
+
+    def shoes_off(self, sender):
         if self.create_arrangement_ui["shoesoff_switch"].value == True:
             self.create_arrangement_ui["shoeson_switch"].value = False
 
