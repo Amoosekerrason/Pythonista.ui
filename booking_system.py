@@ -171,8 +171,28 @@ class CreateArrangementContentView(ContentView):
         if self.create_arrangement_ui["contact_text"].text == "000":
             self.create_arrangement_ui["contact_text"].text = "陳帥"
 
+    def send_data_to_db(self):
+        arrangement_data = {}
+        arrangement_data["year"] = self.create_arrangement_ui["year_text"].text
+        arrangement_data["month"] = self.create_arrangement_ui["month_text"].text
+        arrangement_data["day"] = self.create_arrangement_ui["day_text"].text
+        arrangement_data["hour"] = self.create_arrangement_ui["hour_text"].text
+        arrangement_data["minute"] = self.create_arrangement_ui["minute_text"].text
+        arrangement_data["last_name"] = self.create_arrangement_ui["last_name_text"].text
+        arrangement_data["gender"] = self.create_arrangement_ui["gender_text"].text
+        arrangement_data["seats"] = self.create_arrangement_ui["seats_text"].text
+        arrangement_data["table"] = self.create_arrangement_ui["table_text"].text
+        arrangement_data["phone"] = self.create_arrangement_ui["phone_text"].text
+        arrangement_data["contact"] = self.create_arrangement_ui["contact_text"].text
+        arrangement_data["want"] = self.create_arrangement_ui["want_switch"].value
+        arrangement_data["shoeson"] = self.create_arrangement_ui["shoeson_switch"].value
+        arrangement_data["shoesoff"] = self.create_arrangement_ui["shoesoff_switch"].value
+        arrangement_data["memo"] = self.create_arrangement_ui["memo_text"].text
+        self.parent_section.send_data_to_db(arrangement_data)
+
     def re_crud(self, sender):
         self.change_field_text()
+        self.send_data_to_db()
         self.parent_section.re_crud()
 
     def handled_date(self, date: tuple[int, int, int]):
@@ -347,6 +367,8 @@ class CRUDSectionView(SectionView):
     def re_crud(self):
         self.parent_section.re_crud()
 
+    def send_data_to_db(self, arrangement_data):
+        self.parent_section.send_data_to_db(arrangement_data)
 
 # endregion
 
@@ -601,6 +623,9 @@ class BelowSectionView(SectionView):
     def re_crud(self):
         self.parent_section.re_crud()
 
+    def send_data_to_db(self, arrangement_data):
+        self.parent_section.send_data_to_db(arrangement_data)
+
 
 class MainSectionView(SectionView):
 
@@ -654,6 +679,8 @@ class MainSectionView(SectionView):
     def create_create_arrangement_content(self):
         self.parent_section.create_create_arrangement_content()
 
+    def send_data_to_db(self, arrangement_data):
+        self.parent_section.send_data_to_db(arrangement_data)
 
 # endregion
 
@@ -910,6 +937,8 @@ class Program:
             crud_section.content = self.create_arrangement_content_res.val
             crud_section.set_content()
 
+    def send_data_to_db(self, arrangement_data: dict):
+        pass
     # endregion
 
     def remove_all_view(self, section: View):
