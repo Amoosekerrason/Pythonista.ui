@@ -73,6 +73,7 @@ class CalendarContentView(ContentView):
 
     def show_content(self):
         if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
             return
         if self.subviews:
             for view in self.subviews:
@@ -139,12 +140,15 @@ class CalendarContentView(ContentView):
 # region CRUD ui
 class CreateArrangementContentView(ContentView):
 
-    def __init__(self, view_id, parent_section=None, x=0, y=0, date=None):
+    def __init__(self, view_id, parent_section=None, x=0, y=0, date=None, contacter_data=None):
         super().__init__(view_id, parent_section, x, y)
         self.date = date
+        self.contacter_data = contacter_data
 
     def show_content(self):
         if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
+
             return
         self.frame = (
             self.x,
@@ -193,9 +197,9 @@ class CreateArrangementContentView(ContentView):
 
     def shoes_what(self):
         if self.create_arrangement_ui["shoeson_switch"].value == True:
-            self.create_arrangement_ui["shoesoff_switch"].value == False
+            self.create_arrangement_ui["shoesoff_switch"].value = False
         if self.create_arrangement_ui["shoesoff_switch"].value == True:
-            self.create_arrangement_ui["shoeson_switch"].value == False
+            self.create_arrangement_ui["shoeson_switch"].value = False
 
     def re_crud(self, sender):
         self.change_field_text()
@@ -249,6 +253,8 @@ class JumpToDateContentView(ContentView):
 
     def show_content(self):
         if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
+
             return
         self.frame = (
             self.x,
@@ -297,6 +303,8 @@ class CRUDContentView(ContentView):
 
     def show_content(self):
         if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
+
             return
         self.frame = (
             self.x,
@@ -351,6 +359,8 @@ class CRUDSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
+
             return
         self.frame = (
             self.x,
@@ -563,6 +573,8 @@ class TopSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
+
             return
         self.frame = (
             self.x,
@@ -593,6 +605,8 @@ class BelowSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
+
             return
         self.frame = (
             self.x,
@@ -665,6 +679,8 @@ class MainSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
+
             return
         if self.top_section:
             self.add_subview(self.top_section)
