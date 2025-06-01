@@ -173,6 +173,8 @@ class CreateArrangementContentView(ContentView):
             self.create_arrangement_ui["gender_text"].text = "先生"
         elif self.create_arrangement_ui["gender_text"].text.lower() == "s":
             self.create_arrangement_ui["gender_text"].text = "小姐"
+        if self.create_arrangement_ui["memo_text"].text == None:
+            self.create_arrangement_ui["memo_text"].text = "無備註"
         '''
         if self.create_arrangement_ui["contact_text"].text in self.contacter_data.keys():
             self.create_arrangement_ui["contact_text"].text = self.contacter_data[self.create_arrangement_ui["contact_text"].text]
