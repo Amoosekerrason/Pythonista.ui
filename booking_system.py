@@ -173,8 +173,10 @@ class CreateArrangementContentView(ContentView):
             self.create_arrangement_ui["gender_text"].text = "先生"
         elif self.create_arrangement_ui["gender_text"].text.lower() == "s":
             self.create_arrangement_ui["gender_text"].text = "小姐"
+        '''
         if self.create_arrangement_ui["contact_text"].text in self.contacter_data.keys():
             self.create_arrangement_ui["contact_text"].text = self.contacter_data[self.create_arrangement_ui["contact_text"].text]
+        '''
 
     def send_data_to_db(self):
         arrangement_data = {}
@@ -207,7 +209,7 @@ class CreateArrangementContentView(ContentView):
     def re_crud(self, sender):
         self.change_field_text()
         data = self.send_data_to_db()
-        if all(data.keys() != None):
+        if all(data.values()):
             self.parent_section.send_data_to_db(data)
             self.parent_section.re_crud()
         else:
