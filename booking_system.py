@@ -167,7 +167,7 @@ class CreateArrangementContentView(ContentView):
         self.create_arrangement_ui["shoeson_switch"].action = self.shoes_on
         self.create_arrangement_ui["shoesoff_switch"].action = self.shoes_off
         self.add_subview(self.create_arrangement_ui)
-    
+
     def change_field_text(self):
         if self.create_arrangement_ui["gender_text"].text.lower() == "r":
             self.create_arrangement_ui["gender_text"].text = "先生"
@@ -296,8 +296,7 @@ class JumpToDateContentView(ContentView):
             self.parent_section.width / 2,
             self.parent_section.height / 2,
         )
-        self.datepicker.date.year, self.datepicker.date.month, self.datepicker.date.day = dt.datetime.now(
-        ).year, dt.datetime.now().month, dt.datetime.now().day
+
         self.add_subview(self.datepicker)
         confirm_btn = Button()
         # confirm_btn.border_width = 1
