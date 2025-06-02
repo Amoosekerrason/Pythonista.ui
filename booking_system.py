@@ -281,6 +281,8 @@ class JumpToDateContentView(ContentView):
             self.parent_section.width / 2,
             self.parent_section.height / 2,
         )
+        self.datepicker.date.year, self.datepicker.date.month, self.datepicker.date.day = dt.datetime.now(
+        ).year, dt.datetime.now().month, dt.datetime.now().day
         self.add_subview(self.datepicker)
         confirm_btn = Button()
         # confirm_btn.border_width = 1
