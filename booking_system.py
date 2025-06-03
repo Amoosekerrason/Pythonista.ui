@@ -289,6 +289,7 @@ class JumpToDateContentView(ContentView):
         self.background_color = "white"
         self.datepicker = DatePicker()
         # self.datepicker.border_width=1
+
         self.datepicker.mode = DATE_PICKER_MODE_DATE
         self.datepicker.frame = (
             self.parent_section.width / 4 - 50,
@@ -317,6 +318,7 @@ class JumpToDateContentView(ContentView):
             self.datepicker.date.day,
         )
         self.parent_section.go_to_date(date)
+        self.datepicker.date = dt.datetime.now()
 
 
 class CRUDContentView(ContentView):
