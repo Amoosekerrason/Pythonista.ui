@@ -62,7 +62,7 @@ class CalendarContentView(ContentView):
 
     def show_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
             return
         if self.subviews:
             for view in self.subviews:
@@ -131,7 +131,7 @@ class CalendarSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
             return
         self.frame = (self.x, self.y, self.parent_section.width,
                       self.parent_section.height)
@@ -155,7 +155,7 @@ class CreateArrangementContentView(ContentView):
 
     def show_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
 
             return
         self.frame = (
@@ -283,7 +283,7 @@ class JumpToDateContentView(ContentView):
 
     def show_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
 
             return
         self.frame = (
@@ -332,10 +332,9 @@ class CRUDContentView(ContentView):
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
 
-
     def show_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
 
             return
         self.frame = (
@@ -389,7 +388,7 @@ class CRUDSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
 
             return
         self.frame = (
@@ -572,7 +571,7 @@ class TopSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
 
             return
         self.frame = (
@@ -600,7 +599,7 @@ class BelowSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
 
             return
         self.frame = (
@@ -666,7 +665,7 @@ class MainSectionView(SectionView):
 
     def set_content(self):
         if not self.parent_section:
-            logger.info(f"{self.view_id} got none parent section")
+            logger.debug(f"{self.view_id} got none parent section")
 
             return
         if self.top_section:
@@ -777,15 +776,15 @@ class Program:
         self.all_components = {
             "main": self.main_section_res,
             "top": self.top_section_res,
-            "below": self.below_section_res,
+            "cs": self.calendar_setcion_res,
             "chc": self.calendar_header_content_res,
             "cc": self.calendar_content_res,
-            "cs": self.calendar_setcion_res,
+            "below": self.below_section_res,
             "sms": self.select_month_section_res,
             "smc": self.select_month_content_res,
-            "jtdc": self.jump_to_date_content_res,
             "cruds": self.crud_section_res,
             "crudc": self.crud_content_res,
+            "jtdc": self.jump_to_date_content_res,
             "cac": self.create_arrangement_content_res,
         }
         for name, res in self.all_components.items():
