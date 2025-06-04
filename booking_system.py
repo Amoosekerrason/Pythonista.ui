@@ -20,8 +20,6 @@ class CalendarHeaderContentView(ContentView):
 
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(self, view_id, parent_section):
-        #     super().__init__(view_id, parent_section)
         if COLOR_TOGGLE:
             self.background_color = "yellow"
 
@@ -56,16 +54,6 @@ class CalendarContentView(ContentView):
                  month=None,
                  day=None):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(
-        #     self,
-        #     view_id,
-        #     parent_section,
-        #     year=None,
-        #     month=None,
-        #     day=None,
-        # ):
-        #     super().__init__(view_id, parent_section)
-        #     self.parent_section = parent_section
         if COLOR_TOGGLE:
             self.background_color = "pink"
         self.year, self.month, self.day = year, month, day
@@ -292,8 +280,6 @@ class JumpToDateContentView(ContentView):
 
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(self, view_id, parent_section, x=0, y=0):
-        #     super().__init__(view_id, parent_section, x, y)
 
     def show_content(self):
         if not self.parent_section:
@@ -345,8 +331,7 @@ class CRUDContentView(ContentView):
 
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(self, view_id, parent_section):
-        #     super().__init__(view_id, parent_section)
+
 
     def show_content(self):
         if not self.parent_section:
@@ -400,8 +385,6 @@ class CRUDSectionView(SectionView):
                  y=0,
                  content: ContentView = None):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(self, view_id, parent_section, content: ContentView = None):
-        #     super().__init__(view_id, parent_section)
         self.content = content
 
     def set_content(self):
@@ -443,12 +426,6 @@ class SelectMonthContentView(ContentView):
 
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(
-        #     self,
-        #     view_id,
-        #     parent_section,
-        # ):
-        #     super().__init__(view_id, parent_section)
 
     def show_content(self):
         if self.parent_section:
@@ -536,16 +513,6 @@ class SelectMonthSectionView(SectionView):
         btns: ContentView = None,
     ):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(
-        #     self,
-        #     view_id,
-        #     parent_section,
-        #     year,
-        #     month,
-        #     day,
-        #     btns: ContentView = None,
-        # ):
-        #     super().__init__(view_id, parent_section)
 
         self.year, self.month, self.day = year, month, day
         self.btns = btns
@@ -599,18 +566,6 @@ class TopSectionView(SectionView):
         month=None,
     ):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(
-        #     self,
-        #     view_id,
-        #     parent_section,
-        #     year=None,
-        #     month=None,
-        #     header_content: ContentView = None,
-        #     body_content: ContentView = None,
-        # ):
-        #     super().__init__(view_id, parent_section)
-
-        #     self.parent_section = parent_section
         if COLOR_TOGGLE:
             self.background_color = "blue"
         self.interface_section_list = []
@@ -639,9 +594,6 @@ class BelowSectionView(SectionView):
 
     def __init__(self, view_id, parent_section=None, x=0, y=0):
         super().__init__(view_id, parent_section, x, y)
-
-        # def __init__(self, view_id, parent_section):
-        #     super().__init__(view_id, parent_section)
         if COLOR_TOGGLE:
             self.background_color = "purple"
         self.interface_section_list = []
@@ -703,14 +655,6 @@ class MainSectionView(SectionView):
         below_section: SectionView = None,
     ):
         super().__init__(view_id, parent_section, x, y)
-        # def __init__(
-        #     self,
-        #     view_id,
-        #     parent_section,
-        #     top_section: SectionView = None,
-        #     below_section: SectionView = None,
-        # ):
-        #     super().__init__(view_id, parent_section)
         self.root_node = self.parent_section
         self.name = f"訂位君"
 
