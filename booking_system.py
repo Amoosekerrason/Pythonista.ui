@@ -9,6 +9,7 @@ from result import *
 from abstract_class import *
 from sql3_db_helper import SQL3DBqueue, SQL3DBHelper
 import logging
+import re
 
 # endregion
 
@@ -134,6 +135,25 @@ class CalendarContentView(ContentView):
                 self.year, self.month, int(sender.title))
 
 
+class CalendarSectionView(SectionView):
+    def __init__(self, view_id, parent_section=None, x=0, y=0, header: ContentView = None, body: ContentView = None):
+        super().__init__(view_id, parent_section, x, y)
+        self.header = header
+        self.body = body
+
+    def set_content(self):
+        if not self.parent_section:
+            logger.info(f"{self.view_id} got none parent section")
+            return
+        self.frame = (self.x, self.y, self.parent_section.width,
+                      self.parent_section.height)
+        if self.header:
+            self.add_subview(self.header)
+        if self.body:
+            self.add_subview(self.body)
+
+    def handle_date(self, year, month, day):
+        self.parent_section.handle_date(year, month, day)
 # endregion
 
 
@@ -577,8 +597,6 @@ class TopSectionView(SectionView):
         y=0,
         year=None,
         month=None,
-        header_content: ContentView = None,
-        body_content: ContentView = None,
     ):
         super().__init__(view_id, parent_section, x, y)
         # def __init__(
@@ -595,8 +613,7 @@ class TopSectionView(SectionView):
         #     self.parent_section = parent_section
         if COLOR_TOGGLE:
             self.background_color = "blue"
-        self.header_content = header_content
-        self.body_content = body_content
+        self.interface_section_list = []
 
     def set_content(self):
         if not self.parent_section:
@@ -609,10 +626,9 @@ class TopSectionView(SectionView):
             self.parent_section.width,
             self.parent_section.height * TOP_SECTION_RATIO,
         )
-        if self.header_content:
-            self.add_subview(self.header_content)
-        if self.body_content:
-            self.add_subview(self.body_content)
+        if self.interface_section_list:
+            for view in self.interface_section_list:
+                self.add_subview(view)
 
     def handle_date(self, year, month, date):
         if self.parent_section:
@@ -747,6 +763,7 @@ class ViewFactory:
         "jump to date content": JumpToDateContentView,
         "crud section": CRUDSectionView,
         "crud content": CRUDContentView,
+        "calendar section": CalendarSectionView,
         "calendar content": CalendarContentView,
         "calandar header content": CalendarHeaderContentView,
         "create arrangement content": CreateArrangementContentView,
@@ -784,10 +801,12 @@ class Program:
     def init_all_components(self):
         self.main_section_res = ViewFactory.produce_product("main", "0")
         self.top_section_res = ViewFactory.produce_product("top", "0-1")
+        self.calendar_setcion_res = ViewFactory.produce_product(
+            "calendar section", "0-1-1")
         self.calendar_header_content_res = ViewFactory.produce_product(
-            "calandar header content", "0-1-1")
+            "calandar header content", "0-1-1-1")
         self.calendar_content_res = ViewFactory.produce_product("calendar content",
-                                                                "0-1-2",
+                                                                "0-1-1-2",
                                                                 year=self.date[0],
                                                                 month=self.date[1],
                                                                 day=self.date[2])
@@ -817,6 +836,7 @@ class Program:
             "below": self.below_section_res,
             "chc": self.calendar_header_content_res,
             "cc": self.calendar_content_res,
+            "cs": self.calendar_setcion_res,
             "sms": self.select_month_section_res,
             "smc": self.select_month_content_res,
             "jtdc": self.jump_to_date_content_res,
@@ -839,8 +859,9 @@ class Program:
             self.top_section_res.val.parent_section = self.main_section_res.val
             self.below_section_res.val.parent_section = self.main_section_res.val
             logger.info("setting top sections.calendar")
-            self.calendar_header_content_res.val.parent_section = self.top_section_res.val
-            self.calendar_content_res.val.parent_section = self.top_section_res.val
+            self.calendar_setcion_res.val.parent_section = self.top_section_res.val
+            self.calendar_header_content_res.val.parent_section = self.calendar_setcion_res.val
+            self.calendar_content_res.val.parent_section = self.calendar_setcion_res.val
             logger.info("setting below sections.select_month")
             self.select_month_section_res.val.parent_section = self.below_section_res.val
             self.select_month_content_res.val.parent_section = self.select_month_section_res.val
@@ -878,22 +899,18 @@ class Program:
             self.below_section_res.val.set_content()
             self.below_section_res.val.y = self.top_section_res.val.height
             logger.info("built primary sections")
-            if (self.calendar_header_content_res.is_ok()
-                    and self.calendar_content_res.is_ok()):
+            if (self.calendar_setcion_res.is_ok() and self.calendar_header_content_res.is_ok() and self.calendar_content_res.is_ok()):
                 logger.info("building calendar and header")
-                (
-                    self.top_section_res.val.header_content,
-                    self.top_section_res.val.body_content,
-                ) = (
-                    self.calendar_header_content_res.val,
-                    self.calendar_content_res.val,
-                )
+                self.top_section_res.val.interface_section_list.append(
+                    self.calendar_setcion_res.val)
+                self.calendar_setcion_res.val.header, self.calendar_setcion_res.val.body = self.calendar_header_content_res.val, self.calendar_content_res.val
                 (
                     self.calendar_content_res.val.year,
                     self.calendar_content_res.val.month,
                     self.calendar_content_res.val.day,
                 ) = (self.date[0], self.date[1], self.date[2])
                 self.top_section_res.val.set_content()
+                self.calendar_setcion_res.val.set_content()
                 logger.info("built calendar and header")
                 if (self.select_month_section_res.is_ok()
                     and self.select_month_content_res.is_ok()
