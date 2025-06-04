@@ -152,6 +152,10 @@ class CreateArrangementContentView(ContentView):
         super().__init__(view_id, parent_section, x, y)
         self.date = date
         self.contacter_data = contacter_data
+        self.regex_pattern = {
+            "year": r"^1\d{2}$", "month": r"^([1-9]|1[0-2])$", "day": r"^([1-9]|[1-2][0-9]|3[0-1])$", "hour": r"^([0-9]|1[0-9]|2[0-4])$", "minute": r"([0-9]|[1-5][0-9])$", "gender": r"^[RrSs]$", "table": r"(^10[1235678]|20[12356789]|21[0-2]|A[1235]|B[1235678]|C[1235]|D[1235678]|V[12356789])$", "phone": r"^09\d{8}$"
+        }
+        self.arrangement_data = {}
 
     def show_content(self):
         if not self.parent_section:
@@ -189,35 +193,33 @@ class CreateArrangementContentView(ContentView):
         '''
 
     def send_data_to_db(self):
-        arrangement_data = {}
-        arrangement_data["year"] = self.create_arrangement_ui["year_text"].text
-        arrangement_data["month"] = self.create_arrangement_ui["month_text"].text
-        arrangement_data["day"] = self.create_arrangement_ui["day_text"].text
-        arrangement_data["hour"] = self.create_arrangement_ui["hour_text"].text
-        arrangement_data["minute"] = self.create_arrangement_ui["minute_text"].text
-        arrangement_data["last_name"] = self.create_arrangement_ui["last_name_text"].text
-        arrangement_data["gender"] = self.create_arrangement_ui["gender_text"].text
-        arrangement_data["seats"] = self.create_arrangement_ui["seats_text"].text
-        arrangement_data["table"] = self.create_arrangement_ui["table_text"].text
-        arrangement_data["phone"] = self.create_arrangement_ui["phone_text"].text
-        arrangement_data["contact"] = self.create_arrangement_ui["contact_text"].text
+
+        self.arrangement_data["year"] = self.create_arrangement_ui["year_text"].text
+        self.arrangement_data["month"] = self.create_arrangement_ui["month_text"].text
+        self.arrangement_data["day"] = self.create_arrangement_ui["day_text"].text
+        self.arrangement_data["hour"] = self.create_arrangement_ui["hour_text"].text
+        self.arrangement_data["minute"] = self.create_arrangement_ui["minute_text"].text
+        self.arrangement_data["last_name"] = self.create_arrangement_ui["last_name_text"].text
+        self.arrangement_data["gender"] = self.create_arrangement_ui["gender_text"].text
+        self.arrangement_data["seats"] = self.create_arrangement_ui["seats_text"].text
+        self.arrangement_data["table"] = self.create_arrangement_ui["table_text"].text
+        self.arrangement_data["phone"] = self.create_arrangement_ui["phone_text"].text
+        self.arrangement_data["contact"] = self.create_arrangement_ui["contact_text"].text
         if self.create_arrangement_ui["want_switch"].value == True:
-            arrangement_data["want"] = "1"
+            self.arrangement_data["want"] = "1"
         else:
-            arrangement_data["want"] = "0"
+            self.arrangement_data["want"] = "0"
 
         if self.create_arrangement_ui["shoeson_switch"].value == True:
-            arrangement_data["shoeson"] = "1"
+            self.arrangement_data["shoeson"] = "1"
         else:
-            arrangement_data["shoeson"] = "0"
+            self.arrangement_data["shoeson"] = "0"
 
         if self.create_arrangement_ui["shoesoff_switch"].value == True:
-            arrangement_data["shoesoff"] = "1"
+            self.arrangement_data["shoesoff"] = "1"
         else:
-            arrangement_data["shoesoff"] = "0"
-        arrangement_data["memo"] = self.create_arrangement_ui["memo_text"].text
-
-        return arrangement_data
+            self.arrangement_data["shoesoff"] = "0"
+        self.arrangement_data["memo"] = self.create_arrangement_ui["memo_text"].text
 
     def shoes_on(self, sender):
         if sender.value == True:
@@ -229,9 +231,9 @@ class CreateArrangementContentView(ContentView):
 
     def re_crud(self, sender):
         self.change_field_text()
-        data = self.send_data_to_db()
-        if all(data.values()):
-            self.parent_section.send_data_to_db(data)
+        self.send_data_to_db()
+        if all(self.arrangement_data.values()):
+            self.parent_section.send_data_to_db(self.arrangement_data)
             self.parent_section.re_crud()
         else:
             warning = View()
