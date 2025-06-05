@@ -155,6 +155,16 @@ class CreateArrangementContentView(ContentView):
         self.regex_pattern = {
             "year": r"^1\d{2}$", "month": r"^([1-9]|1[0-2])$", "day": r"^([1-9]|[1-2][0-9]|3[0-1])$", "hour": r"^([0-9]|1[0-9]|2[0-4])$", "minute": r"([0-9]|[1-5][0-9])$", "gender": r"^[RrSs]$", "table": r"(^10[1235678]|20[12356789]|21[0-2]|A[1235]|B[1235678]|C[1235]|D[1235678]|V[12356789])$", "phone": r"^09\d{8}$"
         }
+        self.field_names = {
+            "year": "年份（民國）",
+            "month": "月份",
+            "day": "日期",
+            "hour": "小時",
+            "minute": "分鐘",
+            "gender": "稱謂代碼（R/S）",
+            "table": "桌號",
+            "phone": "手機號碼"
+        }
         self.arrangement_data = {}
 
     def show_content(self):
@@ -221,6 +231,31 @@ class CreateArrangementContentView(ContentView):
             self.arrangement_data["shoesoff"] = "0"
         self.arrangement_data["memo"] = self.create_arrangement_ui["memo_text"].text
 
+    def check_regex(self):
+        for k, pattern in self.regex_pattern.items():
+            value = self.arrangement_data.get(k, "")
+            if not re.fullmatch(pattern, value):
+                display_name = self.field_names.get(k, k)
+                warning = View()
+                warning.name = f"{display_name}格式錯誤：{value}"
+                warning.present("popover")
+                return False
+        return True
+
+    def re_crud(self, sender):
+        self.change_field_text()
+        self.send_data_to_db()
+
+        if not all(self.arrangement_data.values()):
+            warning = View()
+            warning.name = "請輸入完整資料"
+            warning.present("popover")
+            return
+        if not self.check_regex():
+            return
+        self.parent_section.send_data_to_db(self.arrangement_data)
+        self.parent_section.re_crud()
+
     def shoes_on(self, sender):
         if sender.value == True:
             self.create_arrangement_ui["shoesoff_switch"].value = False
@@ -228,17 +263,6 @@ class CreateArrangementContentView(ContentView):
     def shoes_off(self, sender):
         if sender.value == True:
             self.create_arrangement_ui["shoeson_switch"].value = False
-
-    def re_crud(self, sender):
-        self.change_field_text()
-        self.send_data_to_db()
-        if all(self.arrangement_data.values()):
-            self.parent_section.send_data_to_db(self.arrangement_data)
-            self.parent_section.re_crud()
-        else:
-            warning = View()
-            warning.name = "請輸入完整資料"
-            warning.present("popover")
 
     def handled_date(self, date: tuple[int, int, int]):
         self.year_filed.text = str(date[0] - 1911)
