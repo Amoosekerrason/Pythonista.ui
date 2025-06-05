@@ -191,16 +191,20 @@ class CreateArrangementContentView(ContentView):
         self.add_subview(self.create_arrangement_ui)
 
     def change_field_text(self):
+        '''
         if self.create_arrangement_ui["gender_text"].text.lower() == "r":
             self.create_arrangement_ui["gender_text"].text = "先生"
         elif self.create_arrangement_ui["gender_text"].text.lower() == "s":
             self.create_arrangement_ui["gender_text"].text = "小姐"
         if not self.create_arrangement_ui["memo_text"].text.strip():
             self.create_arrangement_ui["memo_text"].text = "無備註"
-        '''
         if self.create_arrangement_ui["contact_text"].text in self.contacter_data.keys():
             self.create_arrangement_ui["contact_text"].text = self.contacter_data[self.create_arrangement_ui["contact_text"].text]
         '''
+        if self.arrangement_data["gender"].lower() == "r":
+            self.arrangement_data["gender"] = "先生"
+        elif self.arrangement_data["gender"].lower() == "s":
+            self.arrangement_data["gender"] = "小姐"
 
     def send_data_to_db(self):
 
@@ -230,6 +234,8 @@ class CreateArrangementContentView(ContentView):
         else:
             self.arrangement_data["shoesoff"] = "0"
         self.arrangement_data["memo"] = self.create_arrangement_ui["memo_text"].text
+        if not self.arrangement_data["memo"].strip():
+            self.arrangement_data["memo"] = "無備註"
 
     def check_regex(self):
         for k, pattern in self.regex_pattern.items():
@@ -243,9 +249,7 @@ class CreateArrangementContentView(ContentView):
         return True
 
     def re_crud(self, sender):
-        self.change_field_text()
         self.send_data_to_db()
-
         if not all(self.arrangement_data.values()):
             warning = View()
             warning.name = "請輸入完整資料"
@@ -253,6 +257,8 @@ class CreateArrangementContentView(ContentView):
             return
         if not self.check_regex():
             return
+        self.change_field_text()
+
         self.parent_section.send_data_to_db(self.arrangement_data)
         self.parent_section.re_crud()
 
