@@ -246,7 +246,7 @@ class CreateArrangementContentView(ContentView):
         if not self.arrangement_data["memo"].strip():
             self.arrangement_data["memo"] = "無備註"
 
-    def check_regex(self):
+    def check_regex(self) -> Err[Any, bool] | Ok[bool, Any]:
         for k, pattern in self.regex_pattern.items():
             value = self.arrangement_data.get(k, "")
             if not re.fullmatch(pattern, value):
@@ -254,8 +254,8 @@ class CreateArrangementContentView(ContentView):
                 warning = View()
                 warning.name = f"{display_name}格式錯誤：{value}"
                 warning.present("popover")
-                return False
-        return True
+                return Err(warning.name)
+        return Ok(True)
 
     def re_crud(self, sender):
         self.send_data_to_db()
@@ -264,7 +264,9 @@ class CreateArrangementContentView(ContentView):
             warning.name = "請輸入完整資料"
             warning.present("popover")
             return
-        if not self.check_regex():
+        regex_result = self.check_regex()
+        if not regex_result.is_ok():
+            logger.error(f"格式錯誤: {regex_result.err}")
             return
         self.change_field_text()
 
