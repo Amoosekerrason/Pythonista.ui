@@ -212,6 +212,8 @@ class CreateArrangementContentView(ContentView):
             self.arrangement_data["gender"] = "先生"
         elif self.arrangement_data["gender"].lower() == "s":
             self.arrangement_data["gender"] = "小姐"
+        self.arrangement_data["year"] = str(
+            int(self.arrangement_data["year"])+1911)
 
     def send_data_to_db(self):
 
