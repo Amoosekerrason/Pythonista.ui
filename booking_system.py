@@ -153,7 +153,14 @@ class CreateArrangementContentView(ContentView):
         self.date = date
         self.contacter_data = contacter_data
         self.regex_pattern = {
-            "year": r"^1\d{2}$", "month": r"^([1-9]|1[0-2])$", "day": r"^([1-9]|[1-2][0-9]|3[0-1])$", "hour": r"^([0-9]|1[0-9]|2[0-4])$", "minute": r"([0-9]|[1-5][0-9])$", "gender": r"^[RrSs]$", "table": r"(^10[1235678]|20[12356789]|21[0-2]|A[1235]|B[1235678]|C[1235]|D[1235678]|V[12356789])$", "phone": r"^09\d{8}$"
+            "year": r"^1\d{2}$",
+            "month": r"^([1-9]|1[0-2])$",
+            "day": r"^([1-9]|[1-2][0-9]|3[0-1])$",
+            "hour": r"^([0-9]|1[0-9]|2[0-4])$",
+            "minute": r"([0-9]|[1-5][0-9])$",
+            "gender": r"^[RrSs]$",
+            "table": r"(^10[1235678]|20[12356789]|21[0-2]|[Aa][1235]|[Bb][12356789]|[Cc][1235]|[Dd][12356789]|[Vv][12356789])$",
+            "phone": r"^09\d{8}$"
         }
         self.field_names = {
             "year": "年份（民國）",
