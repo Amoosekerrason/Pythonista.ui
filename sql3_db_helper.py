@@ -92,7 +92,8 @@ class SQL3DBHelper(DBHelper):
                     ("isSpecify", "INTEGER"),
                     ("shoesOff", "INTEGER"),
                     ("eventTime", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"),
-                    ("contacter", "TEXT")
+                    ("contacter", "TEXT"),
+                    ("memo","TEXT")
                 ]
                 )
             )
