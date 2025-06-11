@@ -83,7 +83,7 @@ class SQL3DBHelper(DBHelper):
         cur = self._get_cursor()
         if cur.is_ok():
             cur.val.execute(
-                self.queue.create("arrangements_info", [
+                self.queue.create(self.arrangements_info_table, [
                     ("id", "INTEGER", "PRIMARY KEY AUTOINCREMENT"),
                     ("name", "TEXT", "NOT NULL"),
                     ("gender", "TEXT"),
@@ -101,7 +101,7 @@ class SQL3DBHelper(DBHelper):
             )
 
             cur.val.execute(
-                self.queue.create("employee_info", [
+                self.queue.create(self.employee_info_table, [
                     ("id", "INTEGER", "UNIQUE NOT NULL"),
                     ("name", "TEXT", "NOT NULL")
                 ],

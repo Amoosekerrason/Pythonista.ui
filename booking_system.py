@@ -215,7 +215,7 @@ class CreateArrangementContentView(ContentView):
         self.arrangement_data["year"] = str(
             int(self.arrangement_data["year"])+1911)
 
-    def send_data_to_db(self):
+    def get_db_data(self):
 
         self.arrangement_data["year"] = self.create_arrangement_ui["year_text"].text
         self.arrangement_data["month"] = self.create_arrangement_ui["month_text"].text
@@ -258,7 +258,7 @@ class CreateArrangementContentView(ContentView):
         return Ok(True)
 
     def re_crud(self, sender):
-        self.send_data_to_db()
+        self.get_db_data()
         if not all(self.arrangement_data.values()):
             warning = View()
             warning.name = "請輸入完整資料"
@@ -270,8 +270,16 @@ class CreateArrangementContentView(ContentView):
             return
         self.change_field_text()
 
-        self.parent_section.send_data_to_db(self.arrangement_data)
-        self.parent_section.re_crud()
+        send_data_to_db_res = self.parent_section.send_data_to_db(
+            self.arrangement_data)
+        if send_data_to_db_res.is_ok():
+            self.parent_section.re_crud()
+        else:
+            logger.error(send_data_to_db_res.err)
+            warning = View()
+            warning.name = send_data_to_db_res.err
+            warning.present("popover")
+            return
 
     def shoes_on(self, sender):
         if sender.value == True:
@@ -992,13 +1000,34 @@ class Program:
 
     def send_data_to_db(self, arrangement_data: dict):
         db_column = 'name gender seats tables phoneNumber arrangementTime isSpecify shoesOff contacter memo'.split()
-        arrangement_time = dt.datetime(year=arrangement_data['year'], month=arrangement_data['month'],
-                                       day=arrangement_data['day'], hour=arrangement_data['hour'], minute=arrangement_data['minute'])
-        timestamp_arrangement_time = arrangement_time.strftime(
-            "%Y-%m-%d %H:%M:%S")
-        # self.dbhelper.insert_data(self.dbhelper.arrangements_info_table,)
-        pass
+        timestamp_res = self.get_arrangement_timestamp(arrangement_data)
+        if timestamp_res.is_ok():
+            db_value = [arrangement_data["last_name"], arrangement_data["gender"], arrangement_data["seats"], arrangement_data["table"], arrangement_data["phone"], timestamp_res.val,
+                        arrangement_data["want"], "1" if arrangement_data["shoesoff"] == "1" else "0", arrangement_data["contact"], "" if arrangement_data["memo"].strip() in ["", "無備註"] else arrangement_data["memo"]]
+            try:
+                self.dbhelper.insert_data(
+                    self.dbhelper.arrangements_info_table, db_column, db_value)
+                logger.info("send data to db success")
+                return Ok("send data to db success")
+            except Exception as e:
+                return Err(f'send data to db failed: {e}')
+        else:
+            logger.error(timestamp_res.err)
+            return timestamp_res
+
     # endregion
+
+    # region misc functions
+
+    def get_arrangement_timestamp(self, arrangement_data: dict) -> Result[str, str]:
+        try:
+            arrangement_time = dt.datetime(year=int(arrangement_data['year']), month=int(arrangement_data['month']),
+                                           day=int(arrangement_data['day']), hour=int(arrangement_data['hour']), minute=int(arrangement_data['minute']))
+            timestamp_arrangement_time = arrangement_time.strftime(
+                "%Y-%m-%d %H:%M:%S")
+            return Ok(timestamp_arrangement_time)
+        except Exception as e:
+            return Err(f"get timestamp gone wrong: {e}")
 
     def remove_all_view(self, section: View):
         for view in section.subviews:
@@ -1016,6 +1045,7 @@ class Program:
 
     def present(self, main_section: MainSectionView):
         main_section.present("fullscreen")
+    # endregion
 
     @staticmethod
     def log():
