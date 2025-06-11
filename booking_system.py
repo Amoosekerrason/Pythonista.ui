@@ -1,8 +1,8 @@
 # region import
 try:
-    from ui import *  # type: ignore
-except ImportError:
     from ui_stub import *  # type: ignore
+except ImportError:
+    from ui import *  # type: ignore
 import datetime as dt
 import calendar as cl
 from result import *
@@ -246,7 +246,7 @@ class CreateArrangementContentView(ContentView):
         if not self.arrangement_data["memo"].strip():
             self.arrangement_data["memo"] = "無備註"
 
-    def check_regex(self) -> Err[Any, bool] | Ok[bool, Any]:
+    def check_regex(self) -> Result[bool, str]:
         for k, pattern in self.regex_pattern.items():
             value = self.arrangement_data.get(k, "")
             if not re.fullmatch(pattern, value):
@@ -991,6 +991,12 @@ class Program:
             crud_section.set_content()
 
     def send_data_to_db(self, arrangement_data: dict):
+        db_column = 'name gender seats tables phoneNumber arrangementTime isSpecify shoesOff contacter memo'.split()
+        arrangement_time = dt.datetime(year=arrangement_data['year'], month=arrangement_data['month'],
+                                       day=arrangement_data['day'], hour=arrangement_data['hour'], minute=arrangement_data['minute'])
+        timestamp_arrangement_time = arrangement_time.strftime(
+            "%Y-%m-%d %H:%M:%S")
+        # self.dbhelper.insert_data(self.dbhelper.arrangements_info_table,)
         pass
     # endregion
 

@@ -69,6 +69,8 @@ class SQL3DBqueue(DBQueue):
 class SQL3DBHelper(DBHelper):
     def __init__(self, db_path, db_queue):
         super().__init__(db_path, db_queue)
+        self.arrangements_info_table = "arrangements_info"
+        self.employee_info_table = "employee_info"
         logger.info("built SQL3DBHelper")
 
     def _get_cursor(self):
@@ -93,7 +95,7 @@ class SQL3DBHelper(DBHelper):
                     ("shoesOff", "INTEGER"),
                     ("eventTime", "TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"),
                     ("contacter", "TEXT"),
-                    ("memo","TEXT")
+                    ("memo", "TEXT")
                 ]
                 )
             )
