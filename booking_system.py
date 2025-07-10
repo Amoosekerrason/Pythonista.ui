@@ -1,8 +1,5 @@
 # region import
-try:
-    from ui_stub import *  # type: ignore
-except ImportError:
-    from ui import *  # type: ignore
+from ui import *  # type: ignore
 import datetime as dt
 import calendar as cl
 from result import *
